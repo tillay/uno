@@ -20,4 +20,3 @@ there are two varaibles that can be changed in the main.py:
 deal, the number of cards dealt at the start of the game
 and width, the width of each column.
 To switch from singleplayer to against the computer, change the last line from bot() to game() and vise versa.
-# uno
