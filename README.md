@@ -1,13 +1,18 @@
 # UNO GAME
 This is a simple uno game for a linux terminal.
+
 The only requirments are a computer that can run python and bash, and a terminal that accepts ansii escape sequences.
 
 Installation:
+
 git clone https://github.com/tillay/uno
 
 cd into it and install:
+
 cd uno
+
 chmod +x install.sh
+
 Then:
 ./install.sh
 
