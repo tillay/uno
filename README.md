@@ -8,6 +8,7 @@ git clone https://github.com/tillay/uno
 cd into it and install:
 cd uno
 chmod +x install.sh
+Then:
 ./install.sh
 
 to play:
