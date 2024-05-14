@@ -38,11 +38,8 @@ elif [ -x "$(command -v pacman)" ]; then
 else
     echo "Unsupported distribution or package manager not found."
 fi
-
-# Prompt user for input: singleplayer (1) or against computer (2)
-read -p "Choose game mode - Singleplayer (1) or Against Computer (2): " mode
-
-# Determine which function to replace the line in main.py with
+read -p "Play Singleplayer (1) or Against Computer (2): " mode
+read -p "Number of cards to start with: " deal
 if [[ "$mode" == "1" ]]; then
     replacement="game()"
 elif [[ "$mode" == "2" ]]; then
@@ -51,8 +48,6 @@ else
     echo "Invalid option. Exiting."
     exit 1
 fi
-
-# Replace the line in main.py based on the selected game mode
 sed -i '' -e "s|print(\"Please run install.sh first!\")|$replacement|g" main.py
-
+sed -i '' -e "s/deal = 6/deal = $deal/g" main.py
 chmod u+x 0 1 2 3 4 5 6 7 8 9 10 e cards.sh
