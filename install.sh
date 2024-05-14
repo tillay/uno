@@ -12,16 +12,18 @@ if [[ "$(uname)" == "Darwin" ]]; then
     brew install neofetch
     replace_in_files 0 1 2 3 4 5 6 7 8 9 e
     # Overwrite card 10 with new content
-    echo $'\e['35'm ++++++++++' > 10
-    echo $'\e['35'm#####+++++++' >> 10
-    echo $'\e['35'm##        ++' >> 10
-    echo $'\e['35'm##  wild  ++' >> 10
-    echo $'\e['35'm##        ++' >> 10
-    echo $'\e['35'm##        ++' >> 10
-    echo $'\e['35'm##  wild  ++' >> 10
-    echo $'\e['35'm##        ++' >> 10
-    echo $'\e['35'm#######+++++' >> 10
-    echo $'\e['35'm ##########' >> 10
+    cat > 10 <<EOL
+echo \$'\e['35'm ++++++++++'
+echo \$'\e['35'm#####+++++++'
+echo \$'\e['35'm##        ++'
+echo \$'\e['35'm##  wild  ++'
+echo \$'\e['35'm##        ++'
+echo \$'\e['35'm##        ++'
+echo \$'\e['35'm##  wild  ++'
+echo \$'\e['35'm##        ++'
+echo \$'\e['35'm#######+++++'
+echo \$'\e['35'm ##########'
+EOL
 elif [ -x "$(command -v apt)" ]; then
     echo "Detected Debian-based distribution"
     sudo apt install figlet
