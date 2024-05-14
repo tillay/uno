@@ -10,20 +10,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     brew install figlet
     brew install neofetch
-    replace_in_files 0 1 2 3 4 5 6 7 8 9 e
-    # Overwrite card 10 with new content
-    cat > 10 <<EOL
-echo \$'\e['35'm ++++++++++'
-echo \$'\e['35'm#####+++++++'
-echo \$'\e['35'm##        ++'
-echo \$'\e['35'm##  wild  ++'
-echo \$'\e['35'm##        ++'
-echo \$'\e['35'm##        ++'
-echo \$'\e['35'm##  wild  ++'
-echo \$'\e['35'm##        ++'
-echo \$'\e['35'm#######+++++'
-echo \$'\e['35'm ##########'
-EOL
+    replace_in_files 0 1 2 3 4 5 6 7 8 9 10 e
 elif [ -x "$(command -v apt)" ]; then
     echo "Detected Debian-based distribution"
     sudo apt install figlet
@@ -40,4 +27,10 @@ else
     echo "Unsupported distribution or package manager not found."
 fi
 
-chmod u+x 0 1 2 3 4 5 6 7 8 9 e cards.sh
+# Prompt user for input
+read -p "Amount of cards to start with: " deal
+
+# Replace the value in main.py
+sed -i '' -e "s/deal = 6/deal = $deal/g" main.py
+
+chmod u+x 0 1 2 3 4 5 6 7 8 9 10 e cards.sh
