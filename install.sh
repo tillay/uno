@@ -2,7 +2,6 @@
 
 replace_in_files() {
     sed -i '' -e 's/-e /$/g' -e 's/\\e\[0m//g' "$@"
-    echo "Modified $@ for macOS"
 }
 
 if [[ "$(uname)" == "Darwin" ]]; then
@@ -51,3 +50,6 @@ fi
 sed -i '' -e "s|print(\"Please run install.sh first!\")|$replacement|g" main.py
 sed -i '' -e "s/deal = 6/deal = $deal/g" main.py
 chmod u+x 0 1 2 3 4 5 6 7 8 9 10 e cards.sh
+echo "in the future, run python3 main.py to play!"
+sleep 3
+python3 main.py
