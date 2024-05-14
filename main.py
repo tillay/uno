@@ -173,4 +173,4 @@ def bot(): #basically singleplayer with some tweaks and computer logic added
             os.system("figlet BRUH")
     print()    
 
-bot() #whether to play single or against a computer, game = single, bot = against computer
+print("Please run install.sh first!")
