@@ -128,6 +128,28 @@ def bot(): #basically singleplayer with some tweaks and computer logic added
                     pcard = [cards[2 * (selec - 1)], cards[2 * (selec - 1) + 1]]
                     rmcard(selec - 1)
                     os.system("clear")
+                    if (pcard[1] == 10):
+                        print("uh oh")
+                        os.system("sleep 1")
+                        while(True):
+                            color = input("New color: ")
+                            if color in ["red", "r"]:
+                                color = 31
+                                break
+                            elif color in ["green", "g"]:
+                                color = 32
+                                break
+                            elif color in ["yellow", "y"]:
+                                color = 33
+                                break
+                            elif color in ["blue", "b"]:
+                                color = 34
+                                break
+                            if (1 <= int(color) <= len(cards) / 2):
+                                    color = cards[2 * (int(color) - 1)+1]
+                                    break
+                            else:
+                                print("Invalid color!")
                 elif cards[2 * (selec - 1)] == 10:
                     while(True):
                         color = input("New color: ")
