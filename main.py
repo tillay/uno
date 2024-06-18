@@ -5,7 +5,7 @@ ecards = []
 rcards = []
 
 ############# INSTANCE VARAIBLES
-deal = 6    # num cards to start with
+deal = 7    # num cards to start with
 width = 10  # width per row, cannot exceed 16, reccomended 10
 #############
 
@@ -39,6 +39,27 @@ def rmcard(num): #remove a singular card
 def randcard(): #draw a random card for user
     cards.append(random.randint(0, 10))
     cards.append(random.randint(31, 34))
+def wildask():
+    while(True):
+        color = input("New color: ")
+        if color in ["red", "r"]:
+            out = ["e",31]
+            break
+        elif color in ["green", "g"]:
+            out = ["e",32]
+            break
+        elif color in ["yellow", "y"]:
+            out = ["e",33]
+            break
+        elif color in ["blue", "b"]:
+            out = ["e",34]
+            break
+        if (1 <= int(color) <= len(cards) / 2):
+                out = ["e",cards[2 * (int(color) - 1)+1]]
+                break
+        else:
+            print("Invalid color!")
+    return out
 def printcards(array,wid): #print all cards in order with nice rows
     i = 1
     while i <= (len(array) // 2):         # go through every value in the card array, printing
@@ -62,29 +83,12 @@ def game(): #single player main function
                 if (cards[2 * (selec - 1)] == pcard[0] or cards[2 * (selec - 1) + 1] == pcard[1]):
                     pcard = [cards[2 * (selec - 1)], cards[2 * (selec - 1) + 1]]
                     rmcard(selec - 1)
+                    if (pcard[0] == 10):
+                        pcard=(wildask())
                     os.system("clear")
                 elif cards[2 * (selec - 1)] == 10: #wildcard logic
-                    while(True):
-                        color = input("New color: ")
-                        if color in ["red", "r"]:
-                            color = 31
-                            break
-                        elif color in ["green", "g"]:
-                            color = 32
-                            break
-                        elif color in ["yellow", "y"]:
-                            color = 33
-                            break
-                        elif color in ["blue", "b"]:
-                            color = 34
-                            break
-                        if (1 <= int(color) <= len(cards) / 2): #if color is not valid
-                                color = cards[2 * (int(color) - 1)+1]
-                                break
-                        else:
-                            print("Invalid color!")
+                    pcard=(wildask())
                     os.system("clear")
-                    pcard = ["e", color]
                     rmcard(selec - 1)
                 else:
                     os.system("clear")
@@ -128,50 +132,10 @@ def bot(): #basically singleplayer with some tweaks and computer logic added
                     pcard = [cards[2 * (selec - 1)], cards[2 * (selec - 1) + 1]]
                     rmcard(selec - 1)
                     os.system("clear")
-                    if (pcard[1] == 10):
-                        print("uh oh")
-                        os.system("sleep 1")
-                        while(True):
-                            color = input("New color: ")
-                            if color in ["red", "r"]:
-                                color = 31
-                                break
-                            elif color in ["green", "g"]:
-                                color = 32
-                                break
-                            elif color in ["yellow", "y"]:
-                                color = 33
-                                break
-                            elif color in ["blue", "b"]:
-                                color = 34
-                                break
-                            if (1 <= int(color) <= len(cards) / 2):
-                                    color = cards[2 * (int(color) - 1)+1]
-                                    break
-                            else:
-                                print("Invalid color!")
+                    if (pcard[0] == 10):
+                        pcard=(wildask())
                 elif cards[2 * (selec - 1)] == 10:
-                    while(True):
-                        color = input("New color: ")
-                        if color in ["red", "r"]:
-                            color = 31
-                            break
-                        elif color in ["green", "g"]:
-                            color = 32
-                            break
-                        elif color in ["yellow", "y"]:
-                            color = 33
-                            break
-                        elif color in ["blue", "b"]:
-                            color = 34
-                            break
-                        if (1 <= int(color) <= len(cards) / 2):
-                                color = cards[2 * (int(color) - 1)+1]
-                                break
-                        else:
-                            print("Invalid color!")
-                    os.system("clear")
-                    pcard = ["e", color]
+                    pcard=(wildask())
                     rmcard(selec - 1)
                 else:
                     os.system("clear")
@@ -195,4 +159,4 @@ def bot(): #basically singleplayer with some tweaks and computer logic added
             os.system("figlet BRUH")
     print()    
 
-print("Please run install.sh first!")
+game()
