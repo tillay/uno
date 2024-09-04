@@ -4,7 +4,7 @@ ecards = []
 rcards = []
 
 ############# INSTANCE VARAIBLES
-deal = 2    # num cards to start with
+deal = 7    # num cards to start with
 width = 10  # width per row, recommended 10 (number labels get wonky after 10)
 #############
 
@@ -157,4 +157,4 @@ def bot(): #basically singleplayer with some tweaks and computer logic added
         for i in range( 0):
             os.system("figlet BRUH")
     print()  
-bot()
+print("please run install.sh first")
