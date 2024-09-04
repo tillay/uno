@@ -73,7 +73,7 @@ def game(): #single player main function
     while len(cards) > 0:
         printarray(0,1,pcard)
         for i in range(min(width, int(len(cards) / 2))): #display nice little numbers over the cards
-            print(i + 1, end="               ")
+            print(i + 1, end="              ")
         print()
         printcards(cards,width)
         selec = input("Enter your choice: ")
