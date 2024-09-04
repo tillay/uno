@@ -4,7 +4,7 @@ ecards = []
 rcards = []
 
 ############# INSTANCE VARAIBLES
-deal = 9    # num cards to start with
+deal = 2    # num cards to start with
 width = 10  # width per row, recommended 10 (number labels get wonky after 10)
 #############
 
@@ -120,7 +120,7 @@ def bot(): #basically singleplayer with some tweaks and computer logic added
         printcards(ecards,width) #computer prints cards
         printarray(0,1,pcard)
         for i in range(min(width, int(len(cards) / 2))):
-            print(i + 1, end="               ")
+            print(i + 1, end="              ")
         print()
         printcards(cards,width)
         selec = input("Enter your choice: ")
@@ -157,4 +157,4 @@ def bot(): #basically singleplayer with some tweaks and computer logic added
         for i in range( 0):
             os.system("figlet BRUH")
     print()  
-game()
+bot()
