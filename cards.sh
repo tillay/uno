@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Function to draw a card
 draw_card() {
     local card_num=$1
     local color=$2
@@ -157,14 +156,6 @@ draw_card() {
     esac
 }
 
-# Ensure we have enough arguments
-if [ "$#" -lt 2 ] || [ $(( $# % 2 )) -ne 0 ]; then
-    echo "Usage: $0 card_number1 card_color1 [card_number2 card_color2 ...]"
-    exit 1
-fi
-
-# Create temporary files for card outputs
-temp_files=()
 trap 'rm -f "${temp_files[@]}"' EXIT
 
 while [ "$#" -gt 0 ]; do
@@ -176,5 +167,4 @@ while [ "$#" -gt 0 ]; do
     shift 2
 done
 
-# Use paste to display cards side by side
 paste -d ' ' "${temp_files[@]}"
