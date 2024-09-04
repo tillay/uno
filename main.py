@@ -1,12 +1,11 @@
-import os
-import random
+import os, random
 cards = []
 ecards = []
 rcards = []
 
 ############# INSTANCE VARAIBLES
-deal = 7    # num cards to start with
-width = 10  # width per row, cannot exceed 16, reccomended 10
+deal = 2    # num cards to start with
+width = 10  # width per row, recommended 10 (number labels get wonky after 10)
 #############
 
 def printarray(start, end, array): #print cards in *array* from *start* to *end*
@@ -157,6 +156,5 @@ def bot(): #basically singleplayer with some tweaks and computer logic added
         os.system("figlet YOU LOSE")
         for i in range( 0):
             os.system("figlet BRUH")
-    print()    
-
-game()
+    print()  
+print("Please run install.sh first")
