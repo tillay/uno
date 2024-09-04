@@ -1,97 +1,180 @@
-if [ -n "$1" ]; then
-    script1="./$1 $2"
-else
-    script1=""
+#!/bin/bash
+
+# Function to draw a card
+draw_card() {
+    local card_num=$1
+    local color=$2
+    local spaces="  "
+
+    case "$card_num" in
+        0)
+            echo -e "\e[${color}m ++++++++++ \e[0m${spaces}"
+            echo -e "\e[${color}m#####+++++++\e[0m${spaces}"
+            echo -e "\e[${color}m##      0 ++\e[0m${spaces}"
+            echo -e "\e[${color}m##   __   ++\e[0m${spaces}"
+            echo -e "\e[${color}m##  |  |  ++\e[0m${spaces}"
+            echo -e "\e[${color}m##  |__|  ++\e[0m${spaces}"
+            echo -e "\e[${color}m##        ++\e[0m${spaces}"
+            echo -e "\e[${color}m## 0      ++\e[0m${spaces}"
+            echo -e "\e[${color}m#######+++++\e[0m${spaces}"
+            echo -e "\e[${color}m ########## \e[0m${spaces}"
+            ;;
+        1)
+            echo -e "\e[${color}m ++++++++++ \e[0m${spaces}"
+            echo -e "\e[${color}m#####+++++++\e[0m${spaces}"
+            echo -e "\e[${color}m##      1 ++\e[0m${spaces}"
+            echo -e "\e[${color}m##   /|   ++\e[0m${spaces}"
+            echo -e "\e[${color}m##    |   ++\e[0m${spaces}"
+            echo -e "\e[${color}m##   _|_  ++\e[0m${spaces}"
+            echo -e "\e[${color}m##        ++\e[0m${spaces}"
+            echo -e "\e[${color}m## 1      ++\e[0m${spaces}"
+            echo -e "\e[${color}m#######+++++\e[0m${spaces}"
+            echo -e "\e[${color}m ########## \e[0m${spaces}"
+            ;;
+        2)
+            echo -e "\e[${color}m ++++++++++ \e[0m${spaces}"
+            echo -e "\e[${color}m######++++++\e[0m${spaces}"
+            echo -e "\e[${color}m##      2 ++\e[0m${spaces}"
+            echo -e "\e[${color}m##   __   ++\e[0m${spaces}"
+            echo -e "\e[${color}m##   __|  ++\e[0m${spaces}"
+            echo -e "\e[${color}m##  |__   ++\e[0m${spaces}"
+            echo -e "\e[${color}m##        ++\e[0m${spaces}"
+            echo -e "\e[${color}m## 2      ++\e[0m${spaces}"
+            echo -e "\e[${color}m#######+++++\e[0m${spaces}"
+            echo -e "\e[${color}m ########## \e[0m${spaces}"
+            ;;
+        3)
+            echo -e "\e[${color}m ++++++++++ \e[0m${spaces}"
+            echo -e "\e[${color}m######++++++\e[0m${spaces}"
+            echo -e "\e[${color}m##      3 ++\e[0m${spaces}"
+            echo -e "\e[${color}m##   __   ++\e[0m${spaces}"
+            echo -e "\e[${color}m##   __|  ++\e[0m${spaces}"
+            echo -e "\e[${color}m##   __|  ++\e[0m${spaces}"
+            echo -e "\e[${color}m##        ++\e[0m${spaces}"
+            echo -e "\e[${color}m## 3      ++\e[0m${spaces}"
+            echo -e "\e[${color}m#######+++++\e[0m${spaces}"
+            echo -e "\e[${color}m ########## \e[0m${spaces}"
+            ;;
+        4)
+            echo -e "\e[${color}m ++++++++++ \e[0m${spaces}"
+            echo -e "\e[${color}m######++++++\e[0m${spaces}"
+            echo -e "\e[${color}m##      4 ++\e[0m${spaces}"
+            echo -e "\e[${color}m##        ++\e[0m${spaces}"
+            echo -e "\e[${color}m##   |_|  ++\e[0m${spaces}"
+            echo -e "\e[${color}m##     |  ++\e[0m${spaces}"
+            echo -e "\e[${color}m##        ++\e[0m${spaces}"
+            echo -e "\e[${color}m## 4      ++\e[0m${spaces}"
+            echo -e "\e[${color}m#######+++++\e[0m${spaces}"
+            echo -e "\e[${color}m ########## \e[0m${spaces}"
+            ;;
+        5)
+            echo -e "\e[${color}m ++++++++++ \e[0m${spaces}"
+            echo -e "\e[${color}m######++++++\e[0m${spaces}"
+            echo -e "\e[${color}m##      5 ++\e[0m${spaces}"
+            echo -e "\e[${color}m##   __   ++\e[0m${spaces}"
+            echo -e "\e[${color}m##  |__   ++\e[0m${spaces}"
+            echo -e "\e[${color}m##   __|  ++\e[0m${spaces}"
+            echo -e "\e[${color}m##        ++\e[0m${spaces}"
+            echo -e "\e[${color}m## 5      ++\e[0m${spaces}"
+            echo -e "\e[${color}m#######+++++\e[0m${spaces}"
+            echo -e "\e[${color}m ########## \e[0m${spaces}"
+            ;;
+        6)
+            echo -e "\e[${color}m ++++++++++ \e[0m${spaces}"
+            echo -e "\e[${color}m######++++++\e[0m${spaces}"
+            echo -e "\e[${color}m##      6 ++\e[0m${spaces}"
+            echo -e "\e[${color}m##   __   ++\e[0m${spaces}"
+            echo -e "\e[${color}m##  |__   ++\e[0m${spaces}"
+            echo -e "\e[${color}m##  |__|  ++\e[0m${spaces}"
+            echo -e "\e[${color}m##        ++\e[0m${spaces}"
+            echo -e "\e[${color}m## 6      ++\e[0m${spaces}"
+            echo -e "\e[${color}m#######+++++\e[0m${spaces}"
+            echo -e "\e[${color}m ########## \e[0m${spaces}"
+            ;;
+        7)
+            echo -e "\e[${color}m ++++++++++ \e[0m${spaces}"
+            echo -e "\e[${color}m######++++++\e[0m${spaces}"
+            echo -e "\e[${color}m##      7 ++\e[0m${spaces}"
+            echo -e "\e[${color}m##   __   ++\e[0m${spaces}"
+            echo -e "\e[${color}m##    /   ++\e[0m${spaces}"
+            echo -e "\e[${color}m##   /    ++\e[0m${spaces}"
+            echo -e "\e[${color}m##        ++\e[0m${spaces}"
+            echo -e "\e[${color}m## 7      ++\e[0m${spaces}"
+            echo -e "\e[${color}m#######+++++\e[0m${spaces}"
+            echo -e "\e[${color}m ########## \e[0m${spaces}"
+            ;;
+        8)
+            echo -e "\e[${color}m ++++++++++ \e[0m${spaces}"
+            echo -e "\e[${color}m######++++++\e[0m${spaces}"
+            echo -e "\e[${color}m##      8 ++\e[0m${spaces}"
+            echo -e "\e[${color}m##   __   ++\e[0m${spaces}"
+            echo -e "\e[${color}m##  |__|  ++\e[0m${spaces}"
+            echo -e "\e[${color}m##  |__|  ++\e[0m${spaces}"
+            echo -e "\e[${color}m##        ++\e[0m${spaces}"
+            echo -e "\e[${color}m## 8      ++\e[0m${spaces}"
+            echo -e "\e[${color}m#######+++++\e[0m${spaces}"
+            echo -e "\e[${color}m ########## \e[0m${spaces}"
+            ;;
+        9)
+            echo -e "\e[${color}m ++++++++++ \e[0m${spaces}"
+            echo -e "\e[${color}m######++++++\e[0m${spaces}"
+            echo -e "\e[${color}m##      9 ++\e[0m${spaces}"
+            echo -e "\e[${color}m##   __   ++\e[0m${spaces}"
+            echo -e "\e[${color}m##  |__|  ++\e[0m${spaces}"
+            echo -e "\e[${color}m##   __|  ++\e[0m${spaces}"
+            echo -e "\e[${color}m##        ++\e[0m${spaces}"
+            echo -e "\e[${color}m## 9      ++\e[0m${spaces}"
+            echo -e "\e[${color}m#######+++++\e[0m${spaces}"
+            echo -e "\e[${color}m ########## \e[0m${spaces}"
+            ;;
+        10)
+            echo -e "\e[90m ++++++++++ \e[0m${spaces}"
+            echo -e "\e[90m#####+++++++\e[0m${spaces}"
+            echo -e "\e[90m##\e[31mXXXX\e[34mXXXX\e[90m++\e[0m${spaces}"
+            echo -e "\e[90m##\e[31mXXXX\e[34mXXXX\e[90m++\e[0m${spaces}"
+            echo -e "\e[90m##\e[31mXXXX\e[34mXXXX\e[90m++\e[0m${spaces}"
+            echo -e "\e[90m##\e[33mXXXX\e[32mXXXX\e[90m++\e[0m${spaces}"
+            echo -e "\e[90m##\e[33mXXXX\e[32mXXXX\e[90m++\e[0m${spaces}"
+            echo -e "\e[90m##\e[33mXXXX\e[32mXXXX\e[90m++\e[0m${spaces}"
+            echo -e "\e[90m#######+++++\e[0m${spaces}"
+            echo -e "\e[90m ########## \e[0m${spaces}"
+            ;;
+        e)
+            echo -e "\e[${color}m ++++++++++ \e[0m${spaces}"
+            echo -e "\e[${color}m######++++++\e[0m${spaces}"
+            echo -e "\e[${color}m##        ++\e[0m${spaces}"
+            echo -e "\e[${color}m##        ++\e[0m${spaces}"
+            echo -e "\e[${color}m##        ++\e[0m${spaces}"
+            echo -e "\e[${color}m##        ++\e[0m${spaces}"
+            echo -e "\e[${color}m##        ++\e[0m${spaces}"
+            echo -e "\e[${color}m##        ++\e[0m${spaces}"
+            echo -e "\e[${color}m#######+++++\e[0m${spaces}"
+            echo -e "\e[${color}m ########## \e[0m${spaces}"
+            ;;
+        *)
+            echo "Invalid card number."
+            ;;
+    esac
+}
+
+# Ensure we have enough arguments
+if [ "$#" -lt 2 ] || [ $(( $# % 2 )) -ne 0 ]; then
+    echo "Usage: $0 card_number1 card_color1 [card_number2 card_color2 ...]"
+    exit 1
 fi
 
-if [ -n "$3" ]; then
-    script2="./$3 $4"
-else
-    script2=""
-fi
+# Create temporary files for card outputs
+temp_files=()
+trap 'rm -f "${temp_files[@]}"' EXIT
 
-if [ -n "$5" ]; then
-    script3="./$5 $6"
-else
-    script3=""
-fi
+while [ "$#" -gt 0 ]; do
+    card_num=$1
+    card_color=$2
+    temp_file=$(mktemp)
+    draw_card "$card_num" "$card_color" > "$temp_file"
+    temp_files+=("$temp_file")
+    shift 2
+done
 
-if [ -n "$7" ]; then
-    script4="./$7 $8"
-else
-    script4=""
-fi
-
-if [ -n "$9" ]; then
-    script5="./$9 ${10}"
-else
-    script5=""
-fi
-
-if [ -n "${11}" ]; then
-    script6="./${11} ${12}"
-else
-    script6=""
-fi
-
-if [ -n "${13}" ]; then
-    script7="./${13} ${14}"
-else
-    script7=""
-fi
-
-if [ -n "${15}" ]; then
-    script8="./${15} ${16}"
-else
-    script8=""
-fi
-
-if [ -n "${17}" ]; then
-    script9="./${17} ${18}"
-else
-    script9=""
-fi
-
-if [ -n "${19}" ]; then
-    script10="./${19} ${20}"
-else
-    script10=""
-fi
-
-if [ -n "${21}" ]; then
-    script11="./${21} ${22}"
-else
-    script11=""
-fi
-
-if [ -n "${23}" ]; then
-    script12="./${23} ${24}"
-else
-    script12=""
-fi
-
-if [ -n "${25}" ]; then
-    script13="./${25} ${26}"
-else
-    script13=""
-fi
-
-if [ -n "${27}" ]; then
-    script14="./${27} ${28}"
-else
-    script14=""
-fi
-
-if [ -n "${29}" ]; then
-    script15="./${29} ${30}"
-else
-    script15=""
-fi
-
-if [ -n "${31}" ]; then
-    script16="./${31} ${32}"
-else
-    script16=""
-fi
-
-paste <($script1) <($script2) <($script3) <($script4) <($script5) <($script6) <($script7) <($script8) <($script9) <($script10) <($script11) <($script12) <($script13) <($script14) <($script15) <($script16)
+# Use paste to display cards side by side
+paste -d ' ' "${temp_files[@]}"
