@@ -127,16 +127,16 @@ draw_card() {
             echo -e "\033[0;${color}m ########## \033[0m${spaces}"
             ;;
         10)
-            echo -e "\e[90m ++++++++++ \033[0m${spaces}"
-            echo -e "\e[90m#####+++++++\033[0m${spaces}"
-            echo -e "\e[90m##\e[31mXXXX\e[34mXXXX\e[90m++\033[0m${spaces}"
-            echo -e "\e[90m##\e[31mXXXX\e[34mXXXX\e[90m++\033[0m${spaces}"
-            echo -e "\e[90m##\e[31mXXXX\e[34mXXXX\e[90m++\033[0m${spaces}"
-            echo -e "\e[90m##\e[33mXXXX\e[32mXXXX\e[90m++\033[0m${spaces}"
-            echo -e "\e[90m##\e[33mXXXX\e[32mXXXX\e[90m++\033[0m${spaces}"
-            echo -e "\e[90m##\e[33mXXXX\e[32mXXXX\e[90m++\033[0m${spaces}"
-            echo -e "\e[90m#######+++++\033[0m${spaces}"
-            echo -e "\e[90m ########## \033[0m${spaces}"
+	    echo -e "\033[0;90m ++++++++++ \033[0;0m${spaces}"
+	    echo -e "\033[0;90m#####+++++++\033[0;0m${spaces}"
+	    echo -e "\033[0;90m##\033[0;31mXXXX\033[0;34mXXXX\033[0;90m++\033[0;0m${spaces}"
+	    echo -e "\033[0;90m##\033[0;31mXXXX\033[0;34mXXXX\033[0;90m++\033[0;0m${spaces}"
+	    echo -e "\033[0;90m##\033[0;31mXXXX\033[0;34mXXXX\033[0;90m++\033[0;0m${spaces}"
+	    echo -e "\033[0;90m##\033[0;33mXXXX\033[0;32mXXXX\033[0;90m++\033[0;0m${spaces}"
+	    echo -e "\033[0;90m##\033[0;33mXXXX\033[0;32mXXXX\033[0;90m++\033[0;0m${spaces}"
+	    echo -e "\033[0;90m##\033[0;33mXXXX\033[0;32mXXXX\033[0;90m++\033[0;0m${spaces}"
+	    echo -e "\033[0;90m#######+++++\033[0;0m${spaces}"
+	    echo -e "\033[0;90m ########## \033[0;0m${spaces}"
             ;;
         e)
             echo -e "\033[0;${color}m ++++++++++ \033[0m${spaces}"
