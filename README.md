@@ -7,8 +7,6 @@ Installation:
 
 git clone https://github.com/tillay/uno
 
-cd into it and install:
-
 cd uno
 
 ./install.sh
@@ -16,7 +14,7 @@ cd uno
 to play:
 python3 main.py
 
-To play in the future, make sure you are in the correct directory and type the same command.
+To play in the future, make sure you are in the uno directory and type python3 main.py.
 
 Modification:
 to change number of starting cards and type of game (singleplayer or against computer) run the installer script again
@@ -24,3 +22,7 @@ to change number of starting cards and type of game (singleplayer or against com
 to change the width of each column, modify the instance varaible with width = 10. Not reccomended unless you dont prefer base 10
 
 (numbers also get kinda offset too)
+
+I didnt add AI at all, the computer version is programmed to only play valid cards with no strategy
+
+im working on a 2 player version with 2 ppl on same ssh server but its a buncha work and confusing
