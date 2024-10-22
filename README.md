@@ -5,16 +5,9 @@ The only requirments are a computer that can run python and bash, and a terminal
 
 Installation:
 
-git clone https://github.com/tillay/uno
+git clone https://github.com/tillay/uno&&cd uno&&./install.sh
 
-cd uno
-
-./install.sh
-
-to play:
-python3 main.py
-
-To play in the future, make sure you are in the uno directory and type python3 main.py.
+To play in the future, make sure you are in the uno directory and run: python3 main.py
 
 Modification:
 to change number of starting cards and type of game (singleplayer or against computer) run the installer script again
