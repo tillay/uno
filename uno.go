@@ -11,7 +11,7 @@ import (
 
 // settings
 var lineWidth = 10
-var initCards = 2
+var initCards = 7
 var againstAi = true
 var aiHardMode = true
 var debuggingMode = false
@@ -31,14 +31,14 @@ func popCard(deck [][]int, index int) [][]int {
 }
 
 func printCardRow(deck [][]int, cardArts map[string][]string) {
-
 	for i := 0; i < len(cardArts[strconv.Itoa(deck[0][0])]); i++ {
+		var currentLine = ""
 		for _, pair := range deck {
 			cardID, color := pair[0], pair[1]
 			cardLines := cardArts[strconv.Itoa(cardID)]
-			fmt.Printf("\033[0;%dm%s\033[0m  ", color, cardLines[i])
+			currentLine += fmt.Sprintf("\033[0;%dm%s\033[0m  ", color, cardLines[i])
 		}
-		fmt.Println()
+		fmt.Println(currentLine)
 	}
 	fmt.Println()
 }
@@ -274,7 +274,7 @@ func main() {
 				// keep going until user does something right
 			}
 
-			if againstAi {
+			if againstAi && len(userCards) != 0 {
 				makeAiThink()
 			}
 		}
