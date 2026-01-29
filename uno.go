@@ -11,9 +11,10 @@ import (
 
 // settings
 var lineWidth = 10
-var initCards = 7
-var againstAI = true
-var AiCardOffset = 5
+var initCards = 2
+var againstAi = true
+var aiHardMode = true
+var debuggingMode = false
 
 // var initializations
 var userCards [][]int
@@ -30,16 +31,12 @@ func popCard(deck [][]int, index int) [][]int {
 }
 
 func printCardRow(deck [][]int, cardArts map[string][]string) {
-	var gap = -1
-	if deck[0][0] == -2 {
-		gap = AiCardOffset
-	}
 
 	for i := 0; i < len(cardArts[strconv.Itoa(deck[0][0])]); i++ {
 		for _, pair := range deck {
 			cardID, color := pair[0], pair[1]
 			cardLines := cardArts[strconv.Itoa(cardID)]
-			fmt.Printf("\033[%dD\033[0;%dm%s\033[0m  ", gap, color, cardLines[i])
+			fmt.Printf("\033[0;%dm%s\033[0m  ", color, cardLines[i])
 		}
 		fmt.Println()
 	}
@@ -80,7 +77,7 @@ func processUserInput() bool {
 					userCards = [][]int{}
 					return true
 				}
-				fmt.Printf("> ")
+				fmt.Printf("-> ")
 				fmt.Scanln(&input)
 				choice, notIntErr := strconv.Atoi(input)
 
@@ -126,7 +123,8 @@ func processUserInput() bool {
 				return true
 
 			} else {
-				fmt.Println("that card cannot be played")
+				fmt.Print("that card cannot be played\n<ok>")
+				fmt.Scanln()
 				return false
 			}
 		} else {
@@ -137,55 +135,98 @@ func processUserInput() bool {
 }
 
 func makeAiThink() {
-	wildCardIndex := -1
+	if aiHardMode {
+		var colorMatchIndex = -1
+		var numberMatchIndices []int
+		var wildCardIndex = -1
 
-	// check for matching color top priority
-	for i := 0; i < len(robotCards); i++ {
-		if robotCards[i][1] == goalCard[1] && robotCards[i][0] != 10 {
-			goalCard = robotCards[i]
-			robotCards = popCard(robotCards, i)
-			fakeRobotCards = popCard(fakeRobotCards, i)
-			return
-		}
-
-		// second priority is matching number
-		for j := 0; j < len(robotCards); j++ {
-			if robotCards[j][0] == goalCard[0] {
-				goalCard = robotCards[j]
-				robotCards = popCard(robotCards, j)
-				fakeRobotCards = popCard(fakeRobotCards, j)
-				return
-
-			} else if robotCards[j][0] == 10 {
-				// if it comes across a wildcard note it
-				wildCardIndex = j
+		// check for matching color top priority
+		for i := 0; i < len(robotCards); i++ {
+			if robotCards[i][0] == 10 {
+				wildCardIndex = i
+			} else if robotCards[i][1] == goalCard[1] {
+				colorMatchIndex = i
+			} else if robotCards[i][0] == goalCard[0] {
+				numberMatchIndices = append(numberMatchIndices, i)
 			}
 		}
-	}
 
-	if wildCardIndex != -1 {
-		// only use wildcard as last resort
-		freq := make(map[int]int)
-		bestColor := 91
-		highestCount := 0
+		if colorMatchIndex != -1 {
+			goalCard = robotCards[colorMatchIndex]
+			robotCards = popCard(robotCards, colorMatchIndex)
+			fakeRobotCards = popCard(fakeRobotCards, 0)
+		} else if len(numberMatchIndices) != 0 {
+			// if deck has viable number cards, play the one that has the most other cards in deck with same color
+			var indexWithMostColors = 0
+			var mostColorsSoFar = 0
+			var colorCounter = 0
 
-		for _, pair := range robotCards {
-			currentValue := pair[1]
-			freq[currentValue]++
-
-			if freq[currentValue] > highestCount {
-				highestCount = freq[currentValue]
-				bestColor = currentValue
+			for i := 0; i < len(numberMatchIndices); i++ {
+				colorCounter = 0
+				for j := 0; j < len(robotCards); j++ {
+					if robotCards[j][1] == robotCards[numberMatchIndices[i]][1] {
+						colorCounter++
+					}
+				}
+				if colorCounter > mostColorsSoFar {
+					mostColorsSoFar = colorCounter
+					indexWithMostColors = i
+				}
 			}
-		}
-		goalCard = []int{-1, bestColor}
-		robotCards = popCard(robotCards, wildCardIndex)
-		fakeRobotCards = popCard(fakeRobotCards, wildCardIndex)
+			goalCard = robotCards[numberMatchIndices[indexWithMostColors]]
+			robotCards = popCard(robotCards, numberMatchIndices[indexWithMostColors])
+			fakeRobotCards = popCard(fakeRobotCards, 0)
 
+		} else if wildCardIndex != -1 {
+			// only use wildcard as last resort
+			freq := make(map[int]int)
+			bestColor := 91
+			highestCount := 0
+
+			for _, pair := range robotCards {
+				currentValue := pair[1]
+				freq[currentValue]++
+
+				if freq[currentValue] > highestCount {
+					highestCount = freq[currentValue]
+					bestColor = currentValue
+				}
+			}
+			goalCard = []int{-1, bestColor}
+			robotCards = popCard(robotCards, wildCardIndex)
+			fakeRobotCards = popCard(fakeRobotCards, 0)
+
+		} else {
+			// if it cant play or wildcard then draw
+			robotCards = append(robotCards, randCard(10))
+			fakeRobotCards = append(fakeRobotCards, []int{-2, 0})
+		}
 	} else {
-		// if it cant play or wildcard then draw
-		robotCards = append(robotCards, randCard(10))
-		fakeRobotCards = append(fakeRobotCards, []int{-2, 0})
+		// if hard mode is disabled then it just plays at random
+		var candidateIndices []int
+		for i := 0; i < len(robotCards); i++ {
+			if robotCards[i][0] == goalCard[0] || robotCards[i][1] == goalCard[1] || robotCards[i][0] == 10 {
+				candidateIndices = append(candidateIndices, i)
+			}
+		}
+
+		if len(candidateIndices) != 0 {
+			chosenCandidateIndex := rand.Intn(len(candidateIndices))
+
+			if robotCards[candidateIndices[chosenCandidateIndex]][0] != 10 {
+				goalCard = robotCards[candidateIndices[chosenCandidateIndex]]
+			} else {
+				// choose a random color of a card in the deck
+				goalCard = []int{-1, robotCards[rand.Intn(len(robotCards))][1]}
+			}
+
+			robotCards = popCard(robotCards, candidateIndices[chosenCandidateIndex])
+			fakeRobotCards = popCard(fakeRobotCards, 0)
+		} else {
+			// if it cant do anything then draw
+			robotCards = append(robotCards, randCard(10))
+			fakeRobotCards = append(fakeRobotCards, []int{-2, 0})
+		}
 	}
 }
 
@@ -199,16 +240,22 @@ func main() {
 		// draw initial deck
 		for i := 0; i < initCards; i++ {
 			userCards = append(userCards, randCard(10))
-			if againstAI {
+			if againstAi {
 				robotCards = append(robotCards, randCard(10))
 				fakeRobotCards = append(fakeRobotCards, []int{-2, 0})
 			}
 		}
 
 		// main loop
-		for len(userCards) > 0 && (!againstAI || len(robotCards) > 0) {
-			fmt.Printf("\033[H\033[2J\033[3J")
-			printAllCards(fakeRobotCards, cardArts)
+		for len(userCards) > 0 && (!againstAi || len(robotCards) > 0) {
+
+			if debuggingMode {
+				printAllCards(robotCards, cardArts)
+			} else {
+				fmt.Printf("\033[H\033[2J\033[3J")
+				printAllCards(fakeRobotCards, cardArts)
+			}
+
 			printCardRow([][]int{goalCard}, cardArts)
 
 			// print labels
@@ -227,16 +274,25 @@ func main() {
 				// keep going until user does something right
 			}
 
-			if againstAI {
+			if againstAi {
 				makeAiThink()
 			}
 		}
 
-		fmt.Printf("\033[H\033[2J\033[3J")
+		if !debuggingMode {
+			fmt.Printf("\033[H\033[2J\033[3J")
+		}
+
 		if len(userCards) == 0 {
-			fmt.Println("You win!")
+			// player won
+			printAllCards(robotCards, cardArts)
+			printCardRow([][]int{goalCard}, cardArts)
+			printCardRow([][]int{{-11, 32}}, cardArts)
 		} else {
-			fmt.Println("You lose!")
+			// player lost
+			printCardRow([][]int{{-12, 31}}, cardArts)
+			printCardRow([][]int{goalCard}, cardArts)
+			printAllCards(userCards, cardArts)
 		}
 
 	} else {

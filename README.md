@@ -1,23 +1,40 @@
 # UNO GAME
 This is a simple uno game for a linux terminal.
 
-Made for my AP compsci class but i still maintain and improve it
+I first made this for my AP compsci class, but I still maintain and improve it
 
-I recently rewrote it completley in go (instead of the original python) because im better at code now
+I recently rewrote it completely in go (instead of the original python) because im better at code now
 
-The only requirements is a terminal that accepts ansii escape sequences and a computer that can run go.
+The only requirements is a terminal that accepts ansi escape sequences and a computer that can run go.
 
-Installation:
+im working on a 2 player version with 2 ppl (networking is goofy to figure out tho)
 
+### Installation:
+make sure go is installed on your system (`sudo apt install golang-go` on debian and `sudo pacman -S go` on arch)
 ```bash
 git clone https://github.com/tillay/uno
 cd uno
 go run uno.go
 ```
 
-Modification:
-to change number of starting cards, type of game (singleplayer or against computer), and some other stuff, change the instance variables listed under settings
+### Gameplay
+You can play against either computer or yourself
 
-i recommend keeping width at 10, its a lot easier if youre best with base10
+type the index of the card you want to play and press enter
 
-im working on a 2 player version with 2 ppl (networking is goofy to figure out tho)
+just press enter to draw a card
+
+if you play a wild card, type the first letter of the color you want (r,g,y,b) or the index of a card that is the color you want
+
+### Modification:
+to change number of starting cards, gamemode, and some other stuff, change the instance variables listed under settings
+
+line width is how many cards it puts on each line (before carrying over to next one)
+
+init cards is how many cards it initially serves to each player
+
+against ai is whether its singleplayer or against the computer (ai)
+
+ai hard mode decides whether the ai uses proper logic or just plays at random
+
+debugging mode shows the computer's cards and doesn't clear the screen every turn
