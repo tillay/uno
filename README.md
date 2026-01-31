@@ -1,9 +1,9 @@
 # UNO GAME
 This is a simple uno game for a linux terminal.
 
-I first made this for my AP compsci class, but I still maintain and improve it
+I first made this for my AP compsci class, but I still maintain and improve it.
 
-I recently rewrote it completely in go (instead of the original python) because im better at code now
+I recently rewrote it completely in go (instead of the original python) because im better at code now.
 
 The only requirements is a terminal that accepts ansi escape sequences and a computer that can run go.
 
@@ -18,13 +18,15 @@ go run uno.go
 ```
 
 ### Gameplay
-You can play against either computer or yourself
+You can play against either computer or yourself.
 
-type the index of the card you want to play and press enter
+To play, type the index of the card you want to play and press enter.
 
-just press enter to draw a card
+To draw a card, press enter without typing anything first. 
 
-if you play a wild card, type the first letter of the color you want (r,g,y,b) or the index of a card that is the color you want
+If you play a wild card, type the first letter of the color you want (`r`,`g`,`y`,`b`) or the index of a card that is the color you want
+
+The prompt being `>` means you are supposed to play a card (it expects a number) and if its `->` then that means you played a wildcard, and it expects a color letter or index.
 
 ### Modification:
 to change number of starting cards, gamemode, and some other stuff, change the instance variables listed under settings
