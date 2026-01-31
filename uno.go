@@ -62,76 +62,74 @@ func processUserInput() bool {
 	if input == "" {
 		userCards = append(userCards, randCard(10))
 		return true
-	} else {
-		number, err := strconv.Atoi(input)
-		if err != nil {
-			fmt.Println("not a card number")
-			return false
-		} else if number-1 < len(userCards) && number-1 >= 0 {
-			// selected a card in deck (may or may not be valid)
-			pickedCard := userCards[number-1]
-			if pickedCard[0] == 10 {
-				// chose a wild card
-				if len(userCards) == 1 {
-					// if this wild is their last card skip color selection
-					userCards = [][]int{}
-					return true
-				}
-				fmt.Printf("-> ")
-				fmt.Scanln(&input)
-				choice, notIntErr := strconv.Atoi(input)
+	}
 
-				// check for color letters
-				if notIntErr != nil {
-					switch input {
-					case "r":
-						goalCard = []int{-1, 31}
-						userCards = popCard(userCards, number-1)
-						return true
-					case "g":
-						goalCard = []int{-1, 32}
-						userCards = popCard(userCards, number-1)
-						return true
-					case "y":
-						goalCard = []int{-1, 33}
-						userCards = popCard(userCards, number-1)
-						return true
-					case "b":
-						goalCard = []int{-1, 34}
-						userCards = popCard(userCards, number-1)
-						return true
-					default:
-						fmt.Println("color options are r g y b")
-						return false
-					}
+	number, err := strconv.Atoi(input)
+	if err != nil {
+		fmt.Println("not a card number")
+		return false
+	} else if number-1 < len(userCards) && number-1 >= 0 {
+		// selected a card in deck (may or may not be valid)
+		pickedCard := userCards[number-1]
+		if pickedCard[0] == 10 {
+			// chose a wild card
+			if len(userCards) == 1 {
+				// if this wild is their last card skip color selection
+				userCards = [][]int{}
+				return true
+			}
+			fmt.Printf("-> ")
+			fmt.Scanln(&input)
+			choice, notIntErr := strconv.Atoi(input)
 
-				} else if choice-1 < len(userCards) && choice > 0 && userCards[choice-1][0] != 10 {
-					// is valid card in deck to yoink color of
-					goalCard = []int{-1, userCards[choice-1][1]}
+			// check for color letters
+			if notIntErr != nil {
+				switch input {
+				case "r":
+					goalCard = []int{-1, 31}
 					userCards = popCard(userCards, number-1)
 					return true
-
-				} else {
-					fmt.Println("that card is not valid for picking color")
+				case "g":
+					goalCard = []int{-1, 32}
+					userCards = popCard(userCards, number-1)
+					return true
+				case "y":
+					goalCard = []int{-1, 33}
+					userCards = popCard(userCards, number-1)
+					return true
+				case "b":
+					goalCard = []int{-1, 34}
+					userCards = popCard(userCards, number-1)
+					return true
+				default:
+					fmt.Println("color options are r g y b")
 					return false
 				}
 
-			} else if pickedCard[0] == goalCard[0] || pickedCard[1] == goalCard[1] {
-				// is valid playable card
-				goalCard = pickedCard
+			} else if choice-1 < len(userCards) && choice > 0 && userCards[choice-1][0] != 10 {
+				// is valid card in deck to yoink color of
+				goalCard = []int{-1, userCards[choice-1][1]}
 				userCards = popCard(userCards, number-1)
 				return true
-
-			} else {
-				fmt.Print("that card cannot be played\n<ok>")
-				fmt.Scanln()
-				return false
 			}
-		} else {
-			fmt.Println("that card does not exist")
+
+			fmt.Println("that card is not valid for picking color")
 			return false
+
+		} else if pickedCard[0] == goalCard[0] || pickedCard[1] == goalCard[1] {
+			// is valid playable card
+			goalCard = pickedCard
+			userCards = popCard(userCards, number-1)
+			return true
+
 		}
+		fmt.Print("that card cannot be played\n<ok>")
+		fmt.Scanln()
+		return false
 	}
+	fmt.Println("that card does not exist\n<ok>")
+	fmt.Scanln()
+	return false
 }
 
 func makeAiThink() {
