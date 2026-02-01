@@ -11,10 +11,10 @@ import (
 
 // settings
 var lineWidth = 10
-var initCards = 2
+var initCards = 7
 var againstAi = true
 var aiHardMode = true
-var debuggingMode = true
+var debuggingMode = false
 
 // var initializations
 var userCards [][]int
