@@ -11,10 +11,10 @@ import (
 
 // settings
 var lineWidth = 10
-var initCards = 7
+var initCards = 2
 var againstAi = true
 var aiHardMode = true
-var debuggingMode = false
+var debuggingMode = true
 
 // var initializations
 var userCards [][]int
@@ -75,6 +75,7 @@ func processUserInput() bool {
 			// chose a wild card
 			if len(userCards) == 1 {
 				// if this wild is their last card skip color selection
+				goalCard = pickedCard
 				userCards = [][]int{}
 				return true
 			}
@@ -177,23 +178,28 @@ func makeAiThink() {
 
 		} else if wildCardIndex != -1 {
 			// only use wildcard as last resort
-			freq := make(map[int]int)
-			bestColor := 91
-			highestCount := 0
+			if len(robotCards) != 1 {
+				freq := make(map[int]int)
+				bestColor := 91
+				highestCount := 0
 
-			for _, pair := range robotCards {
-				currentValue := pair[1]
-				freq[currentValue]++
+				for _, pair := range robotCards {
+					currentValue := pair[1]
+					freq[currentValue]++
 
-				if freq[currentValue] > highestCount {
-					highestCount = freq[currentValue]
-					bestColor = currentValue
+					if freq[currentValue] > highestCount {
+						highestCount = freq[currentValue]
+						bestColor = currentValue
+					}
 				}
+				goalCard = []int{-1, bestColor}
+				robotCards = popCard(robotCards, wildCardIndex)
+				fakeRobotCards = popCard(fakeRobotCards, 0)
+			} else {
+				goalCard = robotCards[wildCardIndex]
+				robotCards = popCard(robotCards, wildCardIndex)
+				fakeRobotCards = popCard(fakeRobotCards, 0)
 			}
-			goalCard = []int{-1, bestColor}
-			robotCards = popCard(robotCards, wildCardIndex)
-			fakeRobotCards = popCard(fakeRobotCards, 0)
-
 		} else {
 			// if it cant play or wildcard then draw
 			robotCards = append(robotCards, randCard(10))
