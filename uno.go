@@ -13,6 +13,7 @@ import (
 var lineWidth = 10
 var initCards = 7
 var againstAi = true
+var enableHints = true
 var debuggingMode = false
 
 // var initializations
@@ -34,13 +35,12 @@ func printCardRow(deck [][]int, cardArts map[string][]string) {
 	for i := 0; i < len(cardArts[strconv.Itoa(deck[0][0])]); i++ {
 		var currentLine = ""
 		for _, pair := range deck {
-			cardID, color := pair[0], pair[1]
-			cardLines := cardArts[strconv.Itoa(cardID)]
-			currentLine += fmt.Sprintf("\033[0;%dm%s  ", color, cardLines[i])
+			cardLines := cardArts[strconv.Itoa(pair[0])]
+			currentLine += fmt.Sprintf("\033[1;%dm%s  ", pair[1], cardLines[i])
 		}
-		fmt.Println(currentLine, "\033[0m")
+		fmt.Println(currentLine)
 	}
-	fmt.Println()
+	fmt.Println("\033[0m")
 }
 
 func printAllCards(deck [][]int, cardArts map[string][]string) {
@@ -60,7 +60,7 @@ func processUserInput() bool {
 	fmt.Scanln(&input)
 
 	if input == "" {
-		userCards = append(userCards, randCard(10))
+		userCards = append(userCards, randCard(11))
 		return true
 	}
 
@@ -106,6 +106,13 @@ func processUserInput() bool {
 
 		} else if pickedCard[0] == goalCard[0] || pickedCard[1] == goalCard[1] {
 			// is valid playable card
+			// add to robot cards if played +2
+			if pickedCard[0] == 11 && againstAi {
+				for i := 0; i < 2; i++ {
+					robotCards = append(robotCards, randCard(11))
+					fakeRobotCards = append(fakeRobotCards, []int{-2, 0})
+				}
+			}
 			goalCard = pickedCard
 			userCards = popCard(userCards, number-1)
 			return true
@@ -137,6 +144,12 @@ func makeAiThink() {
 	}
 
 	if colorMatchIndex != -1 {
+		// add cards to player if a +2 was played
+		if robotCards[colorMatchIndex][0] == 11 {
+			for i := 0; i < 2; i++ {
+				userCards = append(userCards, randCard(11))
+			}
+		}
 		goalCard = robotCards[colorMatchIndex]
 		robotCards = popCard(robotCards, colorMatchIndex)
 		fakeRobotCards = popCard(fakeRobotCards, 0)
@@ -158,6 +171,14 @@ func makeAiThink() {
 				indexWithMostColors = i
 			}
 		}
+
+		// add cards to player if a +2 was played
+		if robotCards[numberMatchIndices[indexWithMostColors]][0] == 11 {
+			for i := 0; i < 2; i++ {
+				userCards = append(userCards, randCard(11))
+			}
+		}
+
 		goalCard = robotCards[numberMatchIndices[indexWithMostColors]]
 		robotCards = popCard(robotCards, numberMatchIndices[indexWithMostColors])
 		fakeRobotCards = popCard(fakeRobotCards, 0)
@@ -190,7 +211,7 @@ func makeAiThink() {
 		}
 	} else {
 		// if it cant play or wildcard then draw
-		robotCards = append(robotCards, randCard(10))
+		robotCards = append(robotCards, randCard(11))
 		fakeRobotCards = append(fakeRobotCards, []int{-2, 0})
 	}
 }
@@ -204,9 +225,9 @@ func main() {
 
 		// draw initial deck
 		for i := 0; i < initCards; i++ {
-			userCards = append(userCards, randCard(10))
+			userCards = append(userCards, randCard(11))
 			if againstAi {
-				robotCards = append(robotCards, randCard(10))
+				robotCards = append(robotCards, randCard(11))
 				fakeRobotCards = append(fakeRobotCards, []int{-2, 0})
 			}
 		}
@@ -230,7 +251,12 @@ func main() {
 				width = lineWidth
 			}
 			for i := 1; i < width+1; i++ {
-				fmt.Print(i, strings.Repeat(" ", 14-len(strconv.Itoa(i))))
+				if userCards[i-1][0] == goalCard[0] || userCards[i-1][1] == goalCard[1] || userCards[i-1][0] == 10 {
+					if enableHints {
+						fmt.Print("\033[4m")
+					}
+				}
+				fmt.Print(i, "\033[0m", strings.Repeat(" ", 14-len(strconv.Itoa(i))))
 			}
 			fmt.Println()
 
