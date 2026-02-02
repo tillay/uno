@@ -12,6 +12,7 @@ import (
 // settings
 var lineWidth = 10
 var initCards = 7
+var cardfile = "newcards.json"
 var againstAi = true
 var enableHints = true
 var debuggingMode = false
@@ -218,7 +219,7 @@ func makeAiThink() {
 
 func main() {
 	// read json for card ascii
-	fileBytes, err := os.ReadFile("cards.json")
+	fileBytes, err := os.ReadFile(cardfile)
 	if err == nil {
 		cardArts := map[string][]string{}
 		json.Unmarshal(fileBytes, &cardArts)
@@ -288,6 +289,6 @@ func main() {
 		}
 
 	} else {
-		fmt.Println("unable to read cards.json!")
+		fmt.Println("unable to read", cardfile, "!")
 	}
 }
