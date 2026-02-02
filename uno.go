@@ -12,7 +12,8 @@ import (
 // settings
 var lineWidth = 10
 var initCards = 7
-var cardfile = "newcards.json"
+var cardFile = "cards.json"
+var font = "sleek"
 var againstAi = true
 var enableHints = true
 var debuggingMode = false
@@ -219,10 +220,15 @@ func makeAiThink() {
 
 func main() {
 	// read json for card ascii
-	fileBytes, err := os.ReadFile(cardfile)
+	fileBytes, err := os.ReadFile(cardFile)
 	if err == nil {
-		cardArts := map[string][]string{}
-		json.Unmarshal(fileBytes, &cardArts)
+		cardFonts := map[string]map[string][]string{}
+		json.Unmarshal(fileBytes, &cardFonts)
+		cardArts, exists := cardFonts[font]
+		if !exists {
+			fmt.Println("font " + font + " does not exist!")
+			return
+		}
 
 		// draw initial deck
 		for i := 0; i < initCards; i++ {
@@ -289,6 +295,6 @@ func main() {
 		}
 
 	} else {
-		fmt.Println("unable to read", cardfile, "!")
+		fmt.Println("unable to read " + cardFile + "!")
 	}
 }

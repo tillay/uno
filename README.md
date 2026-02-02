@@ -37,6 +37,6 @@ init cards is how many cards it initially serves to each player
 
 against ai is whether its singleplayer or against the computer (ai)
 
-ai hard mode decides whether the ai uses proper logic or just plays at random
+enable hints controls whether to underline index labels for cards that can be played
 
 debugging mode shows the computer's cards and doesn't clear the screen every turn
