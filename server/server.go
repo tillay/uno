@@ -4,7 +4,6 @@ import (
 	cryptorand "crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
-	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -137,7 +136,6 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			if strings.Contains(game.Turn, "wins") || game.Turn == "ghost" {
 				lock.Unlock()
 				ws.WriteJSON(map[string]string{"critical error": "game over"})
-				fmt.Println(game.Turn)
 				ws.Close()
 				return
 			}
