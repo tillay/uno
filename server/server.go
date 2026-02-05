@@ -259,6 +259,9 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	game := games[gameID]
 	game.Turn = "ghost"
 	go broadcast(gameID)
+	lock.Lock()
+	delete(connections[gameID], ws)
+	lock.Unlock()
 }
 
 func main() {

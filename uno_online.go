@@ -145,7 +145,7 @@ func processClientInput() bool {
 
 	number, err := strconv.Atoi(input)
 	if err != nil || number-1 < 0 || number-1 >= len(userCards) {
-		fmt.Print("that card does not exist")
+		fmt.Println("that card does not exist")
 		return false
 	}
 
@@ -185,7 +185,7 @@ func processClientInput() bool {
 	}
 
 	if goalCard[0] != pickedCard[0] && goalCard[1] != pickedCard[1] {
-		fmt.Print("that card cannot be played")
+		fmt.Println("that card cannot be played")
 		return false
 	}
 
@@ -207,7 +207,7 @@ func runOnline() {
 	json.Unmarshal(fileBytes, &cardFonts)
 	cardArts := cardFonts[font]
 
-	fmt.Print("Game id (leave blank to generate new one): ")
+	fmt.Print("Game id (leave blank to generate new one): \033[95m")
 	fmt.Scanln(&gameId)
 
 	websocketConn, _, err = websocket.DefaultDialer.Dial(websocketUrl+"/ws", nil)

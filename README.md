@@ -17,6 +17,8 @@ cd uno
 go build
 go run uno
 ```
+> [!IMPORTANT]
+> do not run just `go run uno.go` this will *not work*. Make sure to run `go build` first!
 
 ### Gameplay
 You can play against the computer, yourself, or against a friend.
