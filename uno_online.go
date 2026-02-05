@@ -89,18 +89,18 @@ func processResponse(response string) bool {
 	if strings.Contains(response, "game_id") {
 		json.Unmarshal([]byte(response), &gameState)
 		gameId = gameState.GameId
-		fmt.Println("Game ID:", gameId)
+		fmt.Println("Game ID:\033[95m", gameId, "\033[1m")
 		return false
 	}
 
 	if strings.Contains(response, "critical error") {
-		fmt.Println(response)
+		fmt.Println("\033[91m" + response + "\033[0m")
 		turn = "over"
 		return false
 	}
 
 	if strings.Contains(response, "error") {
-		fmt.Println(response)
+		fmt.Println("\033[93m" + response + "\033[0m")
 		return false
 	}
 
@@ -145,6 +145,7 @@ func processClientInput() bool {
 
 	number, err := strconv.Atoi(input)
 	if err != nil || number-1 < 0 || number-1 >= len(userCards) {
+		fmt.Print("that card does not exist")
 		return false
 	}
 
@@ -184,6 +185,7 @@ func processClientInput() bool {
 	}
 
 	if goalCard[0] != pickedCard[0] && goalCard[1] != pickedCard[1] {
+		fmt.Print("that card cannot be played")
 		return false
 	}
 
