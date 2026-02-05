@@ -20,6 +20,16 @@ go run uno
 > [!IMPORTANT]
 > do not run just `go run uno.go` this will *not work*. Make sure to run `go build` first!
 
+### Docker Server Instructions
+```bash
+git clone https://github.com/tillay/uno
+cd uno
+cd server
+docker compose up --build -d
+```
+> [!IMPORTANT]
+> make sure to uncomment or change the websocket url in `uno.go' on your client device so you can use your websocket instead of default.
+
 ### Gameplay
 You can play against the computer, yourself, or against a friend.
 
@@ -49,4 +59,3 @@ debugging mode shows the computer's cards or server response json and doesn't cl
 There are multiple fonts to display cards like "sleek" and "classic." These are stored in cards.json and new ones can be added. 
 
 websocketUrl is the server it connects to in order to allow for multiplayer. This can be changed if you want to host a server yourself. (see `server/server.go`)
-
