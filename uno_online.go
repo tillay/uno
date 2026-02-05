@@ -89,7 +89,7 @@ func processResponse(response string) bool {
 	if strings.Contains(response, "game_id") {
 		json.Unmarshal([]byte(response), &gameState)
 		gameId = gameState.GameId
-		fmt.Println("Game ID:\033[95m", gameId, "\033[1m")
+		fmt.Println("\033[0mGame ID:\033[95m", gameId, "\033[0m")
 		return false
 	}
 
@@ -207,7 +207,7 @@ func runOnline() {
 	json.Unmarshal(fileBytes, &cardFonts)
 	cardArts := cardFonts[font]
 
-	fmt.Print("Game id (leave blank to generate new one): \033[95m")
+	fmt.Print("\033[0mGame id (leave blank to generate new one): \033[95m")
 	fmt.Scanln(&gameId)
 
 	websocketConn, _, err = websocket.DefaultDialer.Dial(websocketUrl+"/ws", nil)
