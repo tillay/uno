@@ -20,7 +20,7 @@ var againstAi = true
 // Online settings
 var websocketUrl = "wss://api.tilley.lol/uno"
 
-// var websocketUrl = "ws://localhost:7777"
+//var websocketUrl = "ws://localhost:7777"
 
 // Instance variables
 var goalCard []int

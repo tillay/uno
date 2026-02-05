@@ -4,9 +4,11 @@ import (
 	cryptorand "crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
+	"strings"
 	"sync"
 
 	"github.com/gorilla/websocket"
@@ -132,6 +134,13 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			game := games[gameID]
+			if strings.Contains(game.Turn, "wins") || game.Turn == "ghost" {
+				lock.Unlock()
+				ws.WriteJSON(map[string]string{"critical error": "game over"})
+				fmt.Println(game.Turn)
+				ws.Close()
+				return
+			}
 			game.Player1Cards = make([]Card, 7)
 			game.Player2Cards = make([]Card, 7)
 			for i := 0; i < 7; i++ {

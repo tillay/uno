@@ -205,7 +205,7 @@ func runOnline() {
 	json.Unmarshal(fileBytes, &cardFonts)
 	cardArts := cardFonts[font]
 
-	fmt.Print("Game id (leave blank generate new one): ")
+	fmt.Print("Game id (leave blank to generate new one): ")
 	fmt.Scanln(&gameId)
 
 	websocketConn, _, err = websocket.DefaultDialer.Dial(websocketUrl+"/ws", nil)
