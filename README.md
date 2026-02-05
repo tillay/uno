@@ -28,7 +28,7 @@ cd server
 docker compose up --build -d
 ```
 > [!IMPORTANT]
-> make sure to uncomment or change the websocket url in `uno.go' on your client device so you can use your websocket instead of default.
+> make sure to uncomment or change the websocket url in `uno.go` on your client device so you can use your websocket instead of default.
 
 ### Gameplay
 You can play against the computer, yourself, or against a friend.
