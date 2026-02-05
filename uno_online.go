@@ -41,10 +41,18 @@ func onMessageReceived(cardArts map[string][]string) {
 		if err != nil {
 			return
 		}
-		if processResponse(string(message)) && prevTurn != turn {
+		if strings.Contains(string(message), "ghost") {
+			fmt.Printf("they lowk ghosted you")
+			turn = "over"
+		} else if processResponse(string(message)) && prevTurn != turn {
 			acceptInput = turn == player
 			prevTurn = turn
 			fmt.Printf("\033[H\033[2J\033[3J")
+
+			if debuggingMode {
+				fmt.Println(string(message))
+			}
+
 			renderEverything(cardArts)
 
 			if turn == player {
@@ -62,7 +70,6 @@ func onMessageReceived(cardArts map[string][]string) {
 					renderEverything(cardArts)
 				}
 				turn = "over"
-				websocketConn.Close()
 			}
 		}
 	}
@@ -86,11 +93,16 @@ func processResponse(response string) bool {
 		return false
 	}
 
+	if strings.Contains(response, "critical error") {
+		fmt.Println(response)
+		turn = "over"
+		return false
+	}
+
 	if strings.Contains(response, "error") {
 		fmt.Println(response)
 		return false
 	}
-	fmt.Println(response)
 
 	json.Unmarshal([]byte(response), &gameState)
 	userCards = gameState.YourCards
@@ -196,7 +208,7 @@ func runOnline() {
 	fmt.Print("Game id (leave blank generate new one): ")
 	fmt.Scanln(&gameId)
 
-	websocketConn, _, err = websocket.DefaultDialer.Dial("wss://"+websocketUrl+"/ws", nil)
+	websocketConn, _, err = websocket.DefaultDialer.Dial(websocketUrl+"/ws", nil)
 	if err != nil {
 		fmt.Println("unable to connect to websocket:", err)
 		return
@@ -216,5 +228,5 @@ func runOnline() {
 
 	for !strings.Contains(turn, "over") {
 	}
-
+	websocketConn.Close()
 }
