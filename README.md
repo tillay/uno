@@ -42,9 +42,9 @@ against ai is whether its singleplayer or against the computer (ai)
 
 enable hints controls whether to underline index labels for cards that can be played
 
-debugging mode shows the computer's cards and doesn't clear the screen every turn (kinda useless unless you are tweaking the computer logic)
+debugging mode shows the computer's cards or server response json and doesn't clear the screen every turn (kinda useless unless you are tweaking the computer logic or trying to fix networking)
 
 There are multiple fonts to display cards like "sleek" and "classic." These are stored in cards.json and new ones can be added. 
 
-websocketUrl is the server it connects to in order to allow for multiplayer. This can be changed if you want to host a server yourself. (see `server.py`)
+websocketUrl is the server it connects to in order to allow for multiplayer. This can be changed if you want to host a server yourself. (see `server/server.go`)
 

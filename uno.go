@@ -11,14 +11,16 @@ var font = "sleek"
 var lineWidth = 10
 var enableHints = true
 var cardFile = "cards.json"
+var debuggingMode = false
 
 // Offline settings
 var initCards = 7
 var againstAi = true
-var debuggingMode = false
 
 // Online settings
-var websocketUrl = "api.tilley.lol/uno"
+var websocketUrl = "wss://api.tilley.lol/uno"
+
+// var websocketUrl = "ws://localhost:7777"
 
 // Instance variables
 var goalCard []int
