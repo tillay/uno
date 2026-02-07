@@ -18,9 +18,14 @@ var initCards = 7
 var againstAi = true
 
 // Online settings
-var websocketUrl = "wss://api.tilley.lol/uno"
+// If you are running your server behind a reverse proxy, change this to "wss://<your_domain.com>/"
+var websocketUrl = "wss://api.tilley.lol/uno" 
 
-//var websocketUrl = "ws://localhost:7777"
+// If you are running the server locally, use this.
+//var websocketUrl = "ws://localhost:7777" 
+
+// If you are running the server on a local network machine, use this
+//var websocketUrl = "ws://<your_server_ip>:7777" 
 
 // Instance variables
 var goalCard []int
