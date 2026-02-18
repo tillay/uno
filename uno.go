@@ -1,38 +1,28 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"strconv"
 )
 
-// General settings
-var onlineMode = true
-var font = "sleek"
-var lineWidth = 10
-var enableHints = true
-var cardFile = "cards.json"
-var debuggingMode = false
+var (
+	onlineMode    = flag.Bool("online", false, "play online against friends")
+	font          = flag.String("font", "sleek", "name of font from the card file to use")
+	lineWidth     = flag.Int("width", 10, "width of each line of cards before carrying over to next line")
+	disableHints  = flag.Bool("disablehints", false, "disable the little underlines under cards that can be played")
+	cardFile      = flag.String("cardfile", "cards.json", "name or path of json file with card assets")
+	debuggingMode = flag.Bool("debug", false, "don't clear after turns and such and show the computer's cards for debugging purposes")
+	initCards     = flag.Int("deal", 7, "amount of cards to start with (offline only)")
+	soloMode      = flag.Bool("solo", false, "whether to play against yourself like solitaire (offline only)")
+	websocketUrl  = flag.String("url", "wss://api.tilley.lol/uno", "url of the server to connect to (online only)")
+	local         = flag.Bool("local", false, "connect to a server running on the same computer (for server development)")
 
-// Offline settings
-var initCards = 7
-var againstAi = true
+	goalCard  []int
+	userCards [][]int
+	colorMap  = map[string]int{"r": 31, "g": 32, "y": 33, "b": 34}
+)
 
-// Online settings
-// If you are running your server behind a reverse proxy, change this to "wss://<your_domain.com>/"
-var websocketUrl = "wss://api.tilley.lol/uno" 
-
-// If you are running the server locally, use this.
-//var websocketUrl = "ws://localhost:7777" 
-
-// If you are running the server on a local network machine, use this
-//var websocketUrl = "ws://<your_server_ip>:7777" 
-
-// Instance variables
-var goalCard []int
-var userCards [][]int
-var colorMap = map[string]int{"r": 31, "g": 32, "y": 33, "b": 34}
-
-// Helper functions
 func printCardRow(deck [][]int, cardArts map[string][]string) {
 	for i := 0; i < len(cardArts[strconv.Itoa(deck[0][0])]); i++ {
 		line := ""
@@ -46,8 +36,8 @@ func printCardRow(deck [][]int, cardArts map[string][]string) {
 }
 
 func printAllCards(deck [][]int, cardArts map[string][]string) {
-	for start := 0; start < len(deck); start += lineWidth {
-		end := start + lineWidth
+	for start := 0; start < len(deck); start += *lineWidth {
+		end := start + *lineWidth
 		if end > len(deck) {
 			end = len(deck)
 		}
@@ -56,7 +46,8 @@ func printAllCards(deck [][]int, cardArts map[string][]string) {
 }
 
 func main() {
-	if onlineMode {
+	flag.Parse()
+	if *onlineMode || *local {
 		runOnline()
 	} else {
 		runOffline()

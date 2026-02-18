@@ -11,12 +11,13 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// instance vars
-var websocketConn *websocket.Conn
-var faceDownCards [][]int
-var player, gameId, turn, prevTurn string
-var stdinLines = make(chan string, 1)
-var acceptInput = false
+var (
+	websocketConn                  *websocket.Conn
+	faceDownCards                  [][]int
+	player, gameId, turn, prevTurn string
+	stdinLines                     = make(chan string, 1)
+	acceptInput                    = false
+)
 
 type GameState struct {
 	Goal      []int   `json:"goal"`
@@ -34,25 +35,24 @@ func wsSend(payload map[string]any) {
 	websocketConn.WriteJSON(payload)
 }
 
-// this runs on incoming messages
 func onMessageReceived(cardArts map[string][]string) {
 	for {
 		_, message, err := websocketConn.ReadMessage()
+		if *debuggingMode {
+			fmt.Println("got message:", string(message))
+		}
 		if err != nil {
 			return
 		}
 		if strings.Contains(string(message), "ghost") {
-			fmt.Printf("they lowk ghosted you")
-			turn = "over"
+			fmt.Println("they lowk ghosted you")
+			prevTurn = "ghost"
 		} else if processResponse(string(message)) && prevTurn != turn {
 			acceptInput = turn == player
 			prevTurn = turn
-			fmt.Printf("\033[H\033[2J\033[3J")
-
-			if debuggingMode {
-				fmt.Println(string(message))
+			if !*debuggingMode {
+				fmt.Printf("\033[H\033[2J\033[3J")
 			}
-
 			renderEverything(cardArts)
 
 			if turn == player {
@@ -79,8 +79,10 @@ func betterStdIn() {
 	reader := bufio.NewReader(os.Stdin)
 	for {
 		line, _ := reader.ReadString('\n')
+		line = strings.TrimSpace(line)
+
 		if acceptInput {
-			stdinLines <- strings.TrimSpace(line)
+			stdinLines <- line
 		}
 	}
 }
@@ -89,19 +91,25 @@ func processResponse(response string) bool {
 	if strings.Contains(response, "game_id") {
 		json.Unmarshal([]byte(response), &gameState)
 		gameId = gameState.GameId
-		fmt.Println("\033[0mGame ID:\033[95m", gameId, "\033[0m")
+		fmt.Print("\033[0mGame ID: \033[95m", gameId, "\033[0m ")
 		return false
 	}
 
 	if strings.Contains(response, "critical error") {
-		fmt.Println("\033[91m" + response + "\033[0m")
+		fmt.Print("\033[91m" + response + "\033[0m")
 		turn = "over"
 		return false
 	}
 
 	if strings.Contains(response, "error") {
-		fmt.Println("\033[93m" + response + "\033[0m")
+		fmt.Print("\033[93m" + response + "\033[0m\n")
 		return false
+	}
+
+	if strings.Contains(response, "achtung") {
+		var achtung map[string]any
+		json.Unmarshal([]byte(response), &achtung)
+		player = fmt.Sprint(achtung["achtung"])
 	}
 
 	json.Unmarshal([]byte(response), &gameState)
@@ -117,11 +125,11 @@ func renderEverything(cardArts map[string][]string) {
 	printCardRow([][]int{goalCard}, cardArts)
 
 	width := len(userCards)
-	if width > lineWidth {
-		width = lineWidth
+	if width > *lineWidth {
+		width = *lineWidth
 	}
 	for i := 1; i < width+1; i++ {
-		if enableHints && turn == player {
+		if !*disableHints && turn == player {
 			if userCards[i-1][0] == goalCard[0] ||
 				userCards[i-1][1] == goalCard[1] ||
 				userCards[i-1][0] == 10 {
@@ -156,7 +164,6 @@ func processClientInput() bool {
 		input = <-stdinLines
 		choice, notIntErr := strconv.Atoi(input)
 
-		// check for color letters
 		if notIntErr != nil {
 			if colorCode, ok := colorMap[input]; ok {
 				wsSend(map[string]any{
@@ -170,7 +177,6 @@ func processClientInput() bool {
 			return false
 
 		} else if choice-1 < len(userCards) && choice > 0 && userCards[choice-1][0] != 10 {
-			// is valid card in deck to yoink color of
 			wsSend(map[string]any{
 				"action": "play",
 				"i":      number - 1,
@@ -197,27 +203,40 @@ func processClientInput() bool {
 }
 
 func runOnline() {
-	fileBytes, err := os.ReadFile(cardFile)
+	fileBytes, err := os.ReadFile(*cardFile)
 	if err != nil {
 		fmt.Println("unable to read card file")
 		return
 	}
 
 	cardFonts := map[string]map[string][]string{}
-	json.Unmarshal(fileBytes, &cardFonts)
-	cardArts := cardFonts[font]
+	err = json.Unmarshal(fileBytes, &cardFonts)
+	if err != nil {
+		fmt.Println("card art file malformed")
+		return
+	}
+	cardArts, exists := cardFonts[*font]
+	if !exists {
+		fmt.Println("font " + *font + " does not exist!")
+		return
+	}
 
 	fmt.Print("\033[0mGame id (leave blank to generate new one): \033[95m")
 	fmt.Scanln(&gameId)
 
-	websocketConn, _, err = websocket.DefaultDialer.Dial(websocketUrl+"/ws", nil)
+	url := *websocketUrl
+
+	if *local {
+		url = "ws://localhost:7777"
+	}
+
+	websocketConn, _, err = websocket.DefaultDialer.Dial(url+"/ws", nil)
 	if err != nil {
 		fmt.Println("unable to connect to websocket:", err)
 		return
 	}
 
 	go onMessageReceived(cardArts)
-
 	go betterStdIn()
 
 	if gameId == "" {
@@ -230,5 +249,7 @@ func runOnline() {
 
 	for !strings.Contains(turn, "over") {
 	}
+
 	websocketConn.Close()
+
 }

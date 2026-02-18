@@ -9,7 +9,6 @@ import (
 	"strings"
 )
 
-// var initializations
 var robotCards [][]int
 var fakeRobotCards [][]int
 
@@ -21,7 +20,6 @@ func popCard(deck [][]int, index int) [][]int {
 	return append(deck[:index], deck[index+1:]...)
 }
 
-// returns whether user finished their turn
 func processUserInput() bool {
 	var input string
 	fmt.Print("> ")
@@ -38,12 +36,9 @@ func processUserInput() bool {
 		fmt.Scanln()
 		return false
 	} else if number-1 < len(userCards) && number-1 >= 0 {
-		// selected a card in deck (may or may not be valid)
 		pickedCard := userCards[number-1]
 		if pickedCard[0] == 10 {
-			// chose a wild card
 			if len(userCards) == 1 {
-				// if this wild is their last card skip color selection
 				goalCard = pickedCard
 				userCards = [][]int{}
 				return true
@@ -52,7 +47,6 @@ func processUserInput() bool {
 			fmt.Scanln(&input)
 			choice, notIntErr := strconv.Atoi(input)
 
-			// check for color letters
 			if notIntErr != nil {
 				if colorCode, ok := colorMap[input]; ok {
 					goalCard = []int{-1, colorCode}
@@ -63,7 +57,6 @@ func processUserInput() bool {
 				return false
 
 			} else if choice-1 < len(userCards) && choice > 0 && userCards[choice-1][0] != 10 {
-				// is valid card in deck to yoink color of
 				goalCard = []int{-1, userCards[choice-1][1]}
 				userCards = popCard(userCards, number-1)
 				return true
@@ -73,9 +66,7 @@ func processUserInput() bool {
 			return false
 
 		} else if pickedCard[0] == goalCard[0] || pickedCard[1] == goalCard[1] {
-			// is valid playable card
-			// add to robot cards if played +2
-			if pickedCard[0] == 11 && againstAi {
+			if pickedCard[0] == 11 && !*soloMode {
 				for i := 0; i < 2; i++ {
 					robotCards = append(robotCards, randCard(11))
 					fakeRobotCards = append(fakeRobotCards, []int{-2, 0})
@@ -100,7 +91,6 @@ func makeAiThink() {
 	var numberMatchIndices []int
 	var wildCardIndex = -1
 
-	// check for matching color top priority
 	for i := 0; i < len(robotCards); i++ {
 		if robotCards[i][0] == 10 {
 			wildCardIndex = i
@@ -112,7 +102,6 @@ func makeAiThink() {
 	}
 
 	if colorMatchIndex != -1 {
-		// add cards to player if a +2 was played
 		if robotCards[colorMatchIndex][0] == 11 {
 			for i := 0; i < 2; i++ {
 				userCards = append(userCards, randCard(11))
@@ -122,7 +111,6 @@ func makeAiThink() {
 		robotCards = popCard(robotCards, colorMatchIndex)
 		fakeRobotCards = popCard(fakeRobotCards, 0)
 	} else if len(numberMatchIndices) != 0 {
-		// if deck has viable number cards, play the one that has the most other cards in deck with same color
 		var indexWithMostColors = 0
 		var mostColorsSoFar = 0
 		var colorCounter = 0
@@ -140,7 +128,6 @@ func makeAiThink() {
 			}
 		}
 
-		// add cards to player if a +2 was played
 		if robotCards[numberMatchIndices[indexWithMostColors]][0] == 11 {
 			for i := 0; i < 2; i++ {
 				userCards = append(userCards, randCard(11))
@@ -152,7 +139,6 @@ func makeAiThink() {
 		fakeRobotCards = popCard(fakeRobotCards, 0)
 
 	} else if wildCardIndex != -1 {
-		// only use wildcard as last resort
 		if len(robotCards) != 1 {
 			freq := make(map[int]int)
 			bestColor := 91
@@ -178,38 +164,38 @@ func makeAiThink() {
 			fakeRobotCards = popCard(fakeRobotCards, 0)
 		}
 	} else {
-		// if it cant play or wildcard then draw
 		robotCards = append(robotCards, randCard(11))
 		fakeRobotCards = append(fakeRobotCards, []int{-2, 0})
 	}
 }
 
 func runOffline() {
-	// read json for card ascii
-	fileBytes, err := os.ReadFile(cardFile)
+	fileBytes, err := os.ReadFile(*cardFile)
 	if err == nil {
 		cardFonts := map[string]map[string][]string{}
-		json.Unmarshal(fileBytes, &cardFonts)
-		cardArts, exists := cardFonts[font]
+		err = json.Unmarshal(fileBytes, &cardFonts)
+		if err != nil {
+			fmt.Println("card art file malformed")
+			return
+		}
+		cardArts, exists := cardFonts[*font]
 		if !exists {
-			fmt.Println("font " + font + " does not exist!")
+			fmt.Println("font " + *font + " does not exist!")
 			return
 		}
 
-		// draw initial deck
 		goalCard = randCard(9)
-		for i := 0; i < initCards; i++ {
+		for i := 0; i < *initCards; i++ {
 			userCards = append(userCards, randCard(11))
-			if againstAi {
+			if !*soloMode {
 				robotCards = append(robotCards, randCard(11))
 				fakeRobotCards = append(fakeRobotCards, []int{-2, 0})
 			}
 		}
 
-		// main loop
-		for len(userCards) > 0 && (!againstAi || len(robotCards) > 0) {
+		for len(userCards) > 0 && (*soloMode || len(robotCards) > 0) {
 
-			if debuggingMode {
+			if *debuggingMode {
 				fmt.Println(strings.Repeat("-", 140))
 				printAllCards(robotCards, cardArts)
 			} else {
@@ -219,14 +205,13 @@ func runOffline() {
 
 			printCardRow([][]int{goalCard}, cardArts)
 
-			// print labels
 			width := len(userCards)
-			if width > lineWidth {
-				width = lineWidth
+			if width > *lineWidth {
+				width = *lineWidth
 			}
 			for i := 1; i < width+1; i++ {
 				if userCards[i-1][0] == goalCard[0] || userCards[i-1][1] == goalCard[1] || userCards[i-1][0] == 10 {
-					if enableHints {
+					if !*disableHints {
 						fmt.Print("\033[4m")
 					}
 				}
@@ -237,31 +222,28 @@ func runOffline() {
 			printAllCards(userCards, cardArts)
 
 			for !processUserInput() {
-				// keep going until user does something right
 			}
 
-			if againstAi && len(userCards) != 0 {
+			if !*soloMode && len(userCards) != 0 {
 				makeAiThink()
 			}
 		}
 
-		if !debuggingMode {
+		if !*debuggingMode {
 			fmt.Printf("\033[H\033[2J\033[3J")
 		}
 
 		if len(userCards) == 0 {
-			// player won
 			printAllCards(robotCards, cardArts)
 			printCardRow([][]int{goalCard}, cardArts)
 			printCardRow([][]int{{-11, 32}}, cardArts)
 		} else {
-			// player lost
 			printCardRow([][]int{{-12, 31}}, cardArts)
 			printCardRow([][]int{goalCard}, cardArts)
 			printAllCards(userCards, cardArts)
 		}
 
 	} else {
-		fmt.Println("unable to read " + cardFile + "!")
+		fmt.Println("unable to read " + *cardFile + "!")
 	}
 }
