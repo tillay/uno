@@ -68,7 +68,11 @@ func main() {
 			return
 		}
 		fmt.Println("starting server at " + localIP + ":" + strconv.Itoa(*port))
-		go server.RunServer(port)
+		if *hostLocal {
+			go server.RunServer(port)
+		} else {
+			server.RunServer(port)
+		}
 	}
 
 	if *onlineMode || *local || *hostLocal {

@@ -231,7 +231,6 @@ func runOnline() {
 	}
 
 	websocketConn, _, err = websocket.DefaultDialer.Dial(url+"/ws", nil)
-	fmt.Println(url)
 	if err != nil {
 		fmt.Println("unable to connect to websocket:", err)
 		return
