@@ -226,11 +226,12 @@ func runOnline() {
 
 	url := *websocketUrl
 
-	if *local {
-		url = "ws://localhost:7777"
+	if *local || *hostLocal {
+		url = "ws://localhost:" + strconv.Itoa(*port)
 	}
 
 	websocketConn, _, err = websocket.DefaultDialer.Dial(url+"/ws", nil)
+	fmt.Println(url)
 	if err != nil {
 		fmt.Println("unable to connect to websocket:", err)
 		return

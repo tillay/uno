@@ -1,12 +1,11 @@
-package main
+package server
 
 import (
-	cryptorand "crypto/rand"
-	"encoding/hex"
 	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
+	"strconv"
 	"strings"
 	"sync"
 
@@ -31,10 +30,13 @@ func getCard(max int) Card {
 	return Card{rand.Intn(max + 1), 31 + rand.Intn(4)}
 }
 
-func genID() string {
-	b := make([]byte, 4)
-	cryptorand.Read(b)
-	return hex.EncodeToString(b)
+func genID(size int) string {
+	chars := "abcdef0123456789"
+	bytes := make([]byte, size)
+	for i := 0; i < size; i++ {
+		bytes[i] = chars[rand.Intn(len(chars))]
+	}
+	return string(bytes)
 }
 
 func censor(game *Game, p string, reveal bool) map[string]interface{} {
@@ -95,7 +97,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("got request:", data)
 		switch action {
 		case "new":
-			id = genID()
+			id = genID(8)
 			p = "1"
 
 			lock.Lock()
@@ -243,7 +245,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func main() {
+func RunServer(port *int) {
 	http.HandleFunc("/ws", wsHandler)
-	log.Fatal(http.ListenAndServe(":7777", nil))
+	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(*port), nil))
 }
