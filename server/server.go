@@ -226,11 +226,11 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	lock.Lock()
 	if conns, ok := connections[id]; ok {
 		delete(conns, ws)
-		if len(conns) == 0 {
+		if len(conns) == 0 && games[id].Turn != "waiting" {
 			delete(games, id)
 			delete(connections, id)
 			fmt.Println("deleted game:", id)
-		} else {
+		} else if games[id].Turn != "waiting" {
 			games[id].Turn += "_ghost"
 			fmt.Println(conns)
 			fmt.Println("ghosting game:", id)
