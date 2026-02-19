@@ -21,7 +21,7 @@ var (
 	local         = flag.Bool("local", false, "connect to a server running on the same computer (for server development)")
 	hostLocal     = flag.Bool("host", false, "host a lan server in addition to playing the game")
 	runServer     = flag.Bool("server", false, "host a server instead of playing the game (for self hosting)")
-	port          = flag.Int("port", 7777, "port to host server on (only when hosting server)")
+	port          = flag.Int("port", 7777, "port to host server on and/or connect to a server on")
 
 	goalCard  []int
 	userCards [][]int
