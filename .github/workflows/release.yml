@@ -21,12 +21,21 @@ jobs:
         run: |
           GOOS=linux GOARCH=amd64 go build -o uno-linux
           GOOS=windows GOARCH=amd64 go build -o uno-windows.exe
+      - name: Set tag
+        run: echo "TAG=${GITHUB_SHA::8}" >> $GITHUB_ENV
 
-      - name: Tag + Release
+      - name: Create tag
+        run: |
+          git config user.name tillay
+          git config user.email tilleyy8@gmail.com
+          git tag $TAG
+          git push origin $TAG
+
+      - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.sha }}
-          name: ${{ github.sha }}
+          tag_name: ${{ env.TAG }}
+          name: ${{ env.TAG }}
           files: |
             uno-linux
             uno-windows.exe
