@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/gorilla/websocket"
 )
@@ -17,6 +18,8 @@ var (
 	player, gameId, turn, prevTurn string
 	stdinLines                     = make(chan string, 1)
 	acceptInput                    = false
+	done                           = make(chan struct{})
+	stateLock                      = sync.Mutex{}
 )
 
 type GameState struct {
@@ -33,58 +36,6 @@ func wsSend(payload map[string]any) {
 	payload["p"] = player
 	payload["id"] = gameId
 	websocketConn.WriteJSON(payload)
-}
-
-func onMessageReceived(cardArts map[string][]string) {
-	for {
-		_, message, err := websocketConn.ReadMessage()
-		if *debuggingMode {
-			fmt.Println("got message:", string(message))
-		}
-		if err != nil {
-			return
-		}
-		if strings.Contains(string(message), "ghost") {
-			fmt.Println("they lowk ghosted you")
-			prevTurn = "ghost"
-		} else if processResponse(string(message)) && prevTurn != turn {
-			acceptInput = turn == player
-			prevTurn = turn
-			if !*debuggingMode {
-				fmt.Printf("\033[H\033[2J\033[3J")
-			}
-			renderEverything(cardArts)
-
-			if turn == player {
-				for !processClientInput() {
-				}
-			} else if !strings.Contains(turn, "wins") {
-				fmt.Print("waiting... ")
-			} else {
-				fmt.Printf("\033[H\033[2J\033[3J")
-				if strings.Contains(turn, player) {
-					renderEverything(cardArts)
-					printCardRow([][]int{{-11, 32}}, cardArts)
-				} else {
-					printCardRow([][]int{{-12, 31}}, cardArts)
-					renderEverything(cardArts)
-				}
-				turn = "over"
-			}
-		}
-	}
-}
-
-func betterStdIn() {
-	reader := bufio.NewReader(os.Stdin)
-	for {
-		line, _ := reader.ReadString('\n')
-		line = strings.TrimSpace(line)
-
-		if acceptInput {
-			stdinLines <- line
-		}
-	}
 }
 
 func processResponse(response string) bool {
@@ -142,9 +93,24 @@ func renderEverything(cardArts map[string][]string) {
 	printAllCards(userCards, cardArts)
 }
 
+func betterStdIn() {
+	reader := bufio.NewReader(os.Stdin)
+	for {
+		line, _ := reader.ReadString('\n')
+		line = strings.TrimSpace(line)
+
+		stateLock.Lock()
+		if acceptInput {
+			stdinLines <- line
+		}
+		stateLock.Unlock()
+	}
+}
+
 func processClientInput() bool {
 	fmt.Print("Your turn> ")
-	input := <-stdinLines
+	line := <-stdinLines
+	input := strings.TrimSpace(line)
 
 	if input == "" {
 		wsSend(map[string]any{"action": "draw"})
@@ -161,33 +127,22 @@ func processClientInput() bool {
 
 	if pickedCard[0] == 10 {
 		fmt.Print("-> ")
-		input = <-stdinLines
-		choice, notIntErr := strconv.Atoi(input)
+		line := <-stdinLines
+		choice, notIntErr := strconv.Atoi(line)
 
 		if notIntErr != nil {
-			if colorCode, ok := colorMap[input]; ok {
-				wsSend(map[string]any{
-					"action": "play",
-					"i":      number - 1,
-					"color":  colorCode,
-				})
+			if colorCode, ok := colorMap[line]; ok {
+				wsSend(map[string]any{"action": "play", "i": number - 1, "color": colorCode})
 				return true
 			}
 			fmt.Println("color options are r g y b")
 			return false
-
 		} else if choice-1 < len(userCards) && choice > 0 && userCards[choice-1][0] != 10 {
-			wsSend(map[string]any{
-				"action": "play",
-				"i":      number - 1,
-				"color":  userCards[choice-1][1],
-			})
+			wsSend(map[string]any{"action": "play", "i": number - 1, "color": userCards[choice-1][1]})
 			return true
 		}
-
 		fmt.Println("that card is not valid for picking color")
 		return false
-
 	}
 
 	if goalCard[0] != pickedCard[0] && goalCard[1] != pickedCard[1] {
@@ -195,11 +150,59 @@ func processClientInput() bool {
 		return false
 	}
 
-	wsSend(map[string]any{
-		"action": "play",
-		"i":      number - 1,
-	})
+	wsSend(map[string]any{"action": "play", "i": number - 1})
 	return true
+}
+
+func onMessageReceived(cardArts map[string][]string) {
+	for {
+		_, msg, err := websocketConn.ReadMessage()
+		if err != nil {
+			close(done)
+			return
+		}
+
+		if *debuggingMode {
+			fmt.Println("got message:", string(msg))
+		}
+
+		if strings.Contains(string(msg), "ghost") {
+			fmt.Println("they lowk ghosted you")
+			prevTurn = "ghost"
+		} else if processResponse(string(msg)) && prevTurn != turn {
+			stateLock.Lock()
+			acceptInput = turn == player
+			stateLock.Unlock()
+			prevTurn = turn
+
+			if !*debuggingMode {
+				fmt.Printf("\033[H\033[2J\033[3J")
+			}
+			renderEverything(cardArts)
+
+			if acceptInput {
+				for !processClientInput() {
+				}
+			} else if !strings.Contains(turn, "wins") {
+				fmt.Print("waiting... ")
+			} else {
+				fmt.Printf("\033[H\033[2J\033[3J")
+				if strings.Contains(turn, player) {
+					renderEverything(cardArts)
+					printCardRow([][]int{{-11, 32}}, cardArts)
+				} else {
+					printCardRow([][]int{{-12, 31}}, cardArts)
+					renderEverything(cardArts)
+				}
+				turn = "over"
+			}
+		}
+
+		if strings.Contains(turn, "over") {
+			close(done)
+			return
+		}
+	}
 }
 
 func runOnline() {
@@ -247,9 +250,6 @@ func runOnline() {
 		wsSend(map[string]any{"action": "join"})
 	}
 
-	for !strings.Contains(turn, "over") {
-	}
-
+	<-done
 	websocketConn.Close()
-
 }

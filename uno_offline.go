@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var robotCards [][]int
@@ -222,6 +223,7 @@ func runOffline() {
 			printAllCards(userCards, cardArts)
 
 			for !processUserInput() {
+				time.Sleep(10 * time.Millisecond)
 			}
 
 			if !*soloMode && len(userCards) != 0 {
