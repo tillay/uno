@@ -1,30 +1,43 @@
-name: Go
-
 on:
   push:
     branches: [ "main" ]
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Set up Go
-      uses: actions/setup-go@v4
-      with:
-        go-version: '1.20'
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.20'
 
-    - name: Build
-      run: |
-        GOOS=linux GOARCH=amd64 go build -o uno-linux
-        GOOS=windows GOARCH=amd64 go build -o uno-windows.exe
+      - name: Build
+        run: |
+          GOOS=linux GOARCH=amd64 go build -o uno-linux
+          GOOS=windows GOARCH=amd64 go build -o uno-windows.exe
+      - name: Set tag
+        run: echo "TAG=${GITHUB_SHA::8}" >> $GITHUB_ENV
 
-    - name: release
-      uses: softprops/action-gh-release@v2
-      with:
-        files: |
-          uno-linux
-          uno-windows.exe
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create tag
+        run: |
+          git config user.name tillay
+          git config user.email tilleyy8@gmail.com
+          git tag $TAG
+          git push origin $TAG
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          name: ${{ env.TAG }}
+          files: |
+            uno-linux
+            uno-windows.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
