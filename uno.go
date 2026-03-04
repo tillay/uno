@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"net"
 	"strconv"
-	"uno/server"
+	
+	"github.com/tillay/uno/server"
 )
 
 var (
