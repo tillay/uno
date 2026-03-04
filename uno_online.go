@@ -203,24 +203,6 @@ func processClientInput() bool {
 }
 
 func runOnline() {
-	fileBytes, err := os.ReadFile(*cardFile)
-	if err != nil {
-		fmt.Println("unable to read card file")
-		return
-	}
-
-	cardFonts := map[string]map[string][]string{}
-	err = json.Unmarshal(fileBytes, &cardFonts)
-	if err != nil {
-		fmt.Println("card art file malformed")
-		return
-	}
-	cardArts, exists := cardFonts[*font]
-	if !exists {
-		fmt.Println("font " + *font + " does not exist!")
-		return
-	}
-
 	fmt.Print("\033[0mGame id (leave blank to generate new one): \033[95m")
 	fmt.Scanln(&gameId)
 
@@ -230,6 +212,7 @@ func runOnline() {
 		url = "ws://localhost:" + strconv.Itoa(*port)
 	}
 
+	var err error
 	websocketConn, _, err = websocket.DefaultDialer.Dial(url+"/ws", nil)
 	if err != nil {
 		fmt.Println("unable to connect to websocket:", err)

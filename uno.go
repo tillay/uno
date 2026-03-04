@@ -1,11 +1,13 @@
 package main
 
 import (
+	_ "embed"
+	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/tillay/uno/server"
 	"net"
 	"strconv"
-	"uno/server"
 )
 
 var (
@@ -26,7 +28,11 @@ var (
 	goalCard  []int
 	userCards [][]int
 	colorMap  = map[string]int{"r": 31, "g": 32, "y": 33, "b": 34}
+	cardArts  = map[string][]string{}
 )
+
+//go:embed assets/cards.json
+var cardFileBytes []byte
 
 func printCardRow(deck [][]int, cardArts map[string][]string) {
 	for i := 0; i < len(cardArts[strconv.Itoa(deck[0][0])]); i++ {
@@ -61,8 +67,24 @@ func getLocalIP() (string, error) {
 
 func main() {
 	flag.Parse()
+	cardFonts := map[string]map[string][]string{}
+	err := json.Unmarshal(cardFileBytes, &cardFonts)
+
+	if err != nil {
+		fmt.Println("card art file malformed")
+		return
+	}
+
+	var exists bool
+	cardArts, exists = cardFonts[*font]
+	if !exists {
+		fmt.Println("font " + *font + " does not exist!")
+		return
+	}
+
 	if *hostLocal || *runServer {
-		localIP, err := getLocalIP()
+		var localIP string
+		localIP, err = getLocalIP()
 		if err != nil {
 			fmt.Println("network error:", err)
 			return
