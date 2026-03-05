@@ -203,8 +203,12 @@ func processClientInput() bool {
 }
 
 func runOnline() {
-	fmt.Print("\033[0mGame id (leave blank to generate new one): \033[95m")
-	fmt.Scanln(&gameId)
+	if *idFlag == "prompt" {
+		fmt.Print("\033[0mGame id (leave blank to generate new one): \033[95m")
+		fmt.Scanln(&gameId)
+	} else {
+		gameId = *idFlag
+	}
 
 	url := *websocketUrl
 

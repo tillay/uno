@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/tillay/uno/server"
 	"net"
 	"strconv"
+
+	"github.com/tillay/uno/server"
 )
 
 var (
@@ -24,6 +25,7 @@ var (
 	hostLocal     = flag.Bool("host", false, "host a lan server in addition to playing the game")
 	runServer     = flag.Bool("server", false, "host a server instead of playing the game (for self hosting)")
 	port          = flag.Int("port", 7777, "port to host server on and/or connect to a server on")
+	idFlag        = flag.String("id", "prompt", "id of online game to connect to")
 
 	goalCard  []int
 	userCards [][]int
@@ -97,7 +99,7 @@ func main() {
 		}
 	}
 
-	if *onlineMode || *local || *hostLocal {
+	if *onlineMode || *local || *hostLocal || *idFlag != "prompt" {
 		runOnline()
 	} else if !*runServer && !*hostLocal {
 		runOffline()

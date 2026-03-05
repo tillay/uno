@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -19,10 +20,11 @@ type Game struct {
 }
 
 var (
-	games       = make(map[string]*Game)
-	connections = make(map[string]map[*websocket.Conn]string)
-	lock        sync.Mutex
-	upgrader    = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}
+	games        = make(map[string]*Game)
+	connections  = make(map[string]map[*websocket.Conn]string)
+	lock         sync.Mutex
+	upgrader     = websocket.Upgrader{CheckOrigin: func(r *http.Request) bool { return true }}
+	rateLimitMap = make(map[string]int64)
 )
 
 func getCard(max int) Card {
@@ -84,6 +86,21 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		action, _ := data["action"].(string)
 		switch action {
 		case "new":
+			ip := r.RemoteAddr
+			if i := strings.LastIndex(ip, ":"); i != -1 {
+				ip = ip[:i]
+			}
+
+			lock.Lock()
+			if t, ok := rateLimitMap[ip]; ok && time.Now().Unix()-t < 3 {
+				lock.Unlock()
+				ws.WriteJSON(map[string]string{"critical error": "429 too many requests"})
+				ws.Close()
+				return
+			}
+			rateLimitMap[ip] = time.Now().Unix()
+			lock.Unlock()
+
 			id, p = genID(8), "1"
 			lock.Lock()
 			games[id] = &Game{[]Card{}, []Card{}, getCard(9), "waiting"}
