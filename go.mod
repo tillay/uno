@@ -1,4 +1,4 @@
-module uno
+module github.com/tillay/uno
 
 go 1.18
 

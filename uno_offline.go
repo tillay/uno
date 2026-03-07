@@ -1,13 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/rand"
-	"os"
 	"strconv"
 	"strings"
-	"time"
 )
 
 var robotCards [][]int
@@ -171,81 +168,63 @@ func makeAiThink() {
 }
 
 func runOffline() {
-	fileBytes, err := os.ReadFile(*cardFile)
-	if err == nil {
-		cardFonts := map[string]map[string][]string{}
-		err = json.Unmarshal(fileBytes, &cardFonts)
-		if err != nil {
-			fmt.Println("card art file malformed")
-			return
+	goalCard = randCard(9)
+	for i := 0; i < *initCards; i++ {
+		userCards = append(userCards, randCard(11))
+		if !*soloMode {
+			robotCards = append(robotCards, randCard(11))
+			fakeRobotCards = append(fakeRobotCards, []int{-2, 0})
 		}
-		cardArts, exists := cardFonts[*font]
-		if !exists {
-			fmt.Println("font " + *font + " does not exist!")
-			return
-		}
-
-		goalCard = randCard(9)
-		for i := 0; i < *initCards; i++ {
-			userCards = append(userCards, randCard(11))
-			if !*soloMode {
-				robotCards = append(robotCards, randCard(11))
-				fakeRobotCards = append(fakeRobotCards, []int{-2, 0})
-			}
-		}
-
-		for len(userCards) > 0 && (*soloMode || len(robotCards) > 0) {
-
-			if *debuggingMode {
-				fmt.Println(strings.Repeat("-", 140))
-				printAllCards(robotCards, cardArts)
-			} else {
-				fmt.Printf("\033[H\033[2J\033[3J")
-				printAllCards(fakeRobotCards, cardArts)
-			}
-
-			printCardRow([][]int{goalCard}, cardArts)
-
-			width := len(userCards)
-			if width > *lineWidth {
-				width = *lineWidth
-			}
-			for i := 1; i < width+1; i++ {
-				if userCards[i-1][0] == goalCard[0] || userCards[i-1][1] == goalCard[1] || userCards[i-1][0] == 10 {
-					if !*disableHints {
-						fmt.Print("\033[4m")
-					}
-				}
-				fmt.Print(i, "\033[0m", strings.Repeat(" ", 14-len(strconv.Itoa(i))))
-			}
-			fmt.Println()
-
-			printAllCards(userCards, cardArts)
-
-			for !processUserInput() {
-				time.Sleep(10 * time.Millisecond)
-			}
-
-			if !*soloMode && len(userCards) != 0 {
-				makeAiThink()
-			}
-		}
-
-		if !*debuggingMode {
-			fmt.Printf("\033[H\033[2J\033[3J")
-		}
-
-		if len(userCards) == 0 {
-			printAllCards(robotCards, cardArts)
-			printCardRow([][]int{goalCard}, cardArts)
-			printCardRow([][]int{{-11, 32}}, cardArts)
-		} else {
-			printCardRow([][]int{{-12, 31}}, cardArts)
-			printCardRow([][]int{goalCard}, cardArts)
-			printAllCards(userCards, cardArts)
-		}
-
-	} else {
-		fmt.Println("unable to read " + *cardFile + "!")
 	}
+
+	for len(userCards) > 0 && (*soloMode || len(robotCards) > 0) {
+
+		if *debuggingMode {
+			fmt.Println(strings.Repeat("-", 140))
+			printAllCards(robotCards, cardArts)
+		} else {
+			fmt.Printf("\033[H\033[2J\033[3J")
+			printAllCards(fakeRobotCards, cardArts)
+		}
+
+		printCardRow([][]int{goalCard}, cardArts)
+
+		width := len(userCards)
+		if width > *lineWidth {
+			width = *lineWidth
+		}
+		for i := 1; i < width+1; i++ {
+			if userCards[i-1][0] == goalCard[0] || userCards[i-1][1] == goalCard[1] || userCards[i-1][0] == 10 {
+				if !*disableHints {
+					fmt.Print("\033[4m")
+				}
+			}
+			fmt.Print(i, "\033[0m", strings.Repeat(" ", 14-len(strconv.Itoa(i))))
+		}
+		fmt.Println()
+
+		printAllCards(userCards, cardArts)
+
+		for !processUserInput() {
+		}
+
+		if !*soloMode && len(userCards) != 0 {
+			makeAiThink()
+		}
+	}
+
+	if !*debuggingMode {
+		fmt.Printf("\033[H\033[2J\033[3J")
+	}
+
+	if len(userCards) == 0 {
+		printAllCards(robotCards, cardArts)
+		printCardRow([][]int{goalCard}, cardArts)
+		printCardRow([][]int{{-11, 32}}, cardArts)
+	} else {
+		printCardRow([][]int{{-12, 31}}, cardArts)
+		printCardRow([][]int{goalCard}, cardArts)
+		printAllCards(userCards, cardArts)
+	}
+
 }
