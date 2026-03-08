@@ -16,7 +16,6 @@ var (
 	font          = flag.String("font", "sleek", "name of font from the card file to use")
 	lineWidth     = flag.Int("width", 10, "width of each line of cards before carrying over to next line")
 	disableHints  = flag.Bool("nohints", false, "disable the little underlines under labels on cards that can be played")
-	cardFile      = flag.String("cardfile", "cards.json", "name or path of json file with card assets")
 	debuggingMode = flag.Bool("debug", false, "don't clear after turns and such and show the computer's cards for debugging purposes")
 	initCards     = flag.Int("deal", 7, "amount of cards to start with (offline only)")
 	soloMode      = flag.Bool("solo", false, "whether to play against yourself like solitaire (offline only)")

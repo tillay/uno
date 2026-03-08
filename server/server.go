@@ -82,25 +82,23 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		if ws.ReadJSON(&data) != nil {
 			break
 		}
-
-		ip := r.RemoteAddr
-		if i := strings.LastIndex(ip, ":"); i != -1 {
-			ip = ip[:i]
-		}
-
-		lock.Lock()
-		if t, ok := rateLimitMap[ip]; ok && time.Now().Unix()-t < 3 {
-			lock.Unlock()
-			ws.WriteJSON(map[string]string{"critical error": "429 too many requests"})
-			ws.Close()
-			return
-		}
-		rateLimitMap[ip] = time.Now().Unix()
-		lock.Unlock()
-
 		action, _ := data["action"].(string)
 		switch action {
 		case "new":
+			ip := r.RemoteAddr
+			if i := strings.LastIndex(ip, ":"); i != -1 {
+				ip = ip[:i]
+			}
+
+			lock.Lock()
+			if t, ok := rateLimitMap[ip]; ok && time.Now().Unix()-t < 3 {
+				lock.Unlock()
+				ws.WriteJSON(map[string]string{"critical error": "429 too many requests"})
+				ws.Close()
+				return
+			}
+			rateLimitMap[ip] = time.Now().Unix()
+			lock.Unlock()
 			id, p = genID(8), "1"
 			lock.Lock()
 			games[id] = &Game{[]Card{}, []Card{}, getCard(9), "waiting"}
